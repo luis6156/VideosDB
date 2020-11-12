@@ -29,8 +29,8 @@ public class User {
     private final HashMap<String, Double> rated;
 
     public User(final String username, final String subscriptionType,
-                         final Map<String, Integer> history,
-                         final ArrayList<String> favoriteMovies) {
+                final Map<String, Integer> history,
+                final ArrayList<String> favoriteMovies) {
         this.username = username;
         this.subscriptionType = subscriptionType;
         this.favoriteMovies = favoriteMovies;
@@ -41,14 +41,14 @@ public class User {
     public String addFavorite(String title) {
         String message;
 
-        // Video wasn't watched -> return error
-        if (!history.containsKey(title)) {
-            message = "error -> " + title + " is not seen";
+        // Video is already in favorites -> return error
+        if (favoriteMovies.contains(title)) {
+            message = "error -> " + title + " is already in favourite list";
             return message;
         }
 
-        // Video is already in favorites -> return error
-        if (favoriteMovies.contains(title)) {
+        // Video wasn't watched -> return error
+        if (!history.containsKey(title)) {
             message = "error -> " + title + " is not seen";
             return message;
         }
@@ -62,7 +62,7 @@ public class User {
         String message;
 
         // Video was watched already -> increment views & return success
-        if (!history.containsKey(title)) {
+        if (history.containsKey(title)) {
             int views = history.get(title);
             history.put(title, ++views);
             message = "success -> " + title + " was viewed with total views of " + views;
@@ -92,7 +92,8 @@ public class User {
 
         // Video wasn't rated -> add rating & return success
         rated.put(title, rating);
-        message = "success -> " + title + " was rated " + rating + " by " + username;
+        message =
+                "success -> " + title + " was rated with " + rating + " by " + username;
         return message;
     }
 
@@ -112,12 +113,13 @@ public class User {
         }
 
         /*
-        * Video wasn't rated -> add rating & return success.
-        * Here the key is the title and the season watched, that way we have
-        * separate entries for different seasons.
-        */
+         * Video wasn't rated -> add rating & return success.
+         * Here the key is the title and the season watched, that way we have
+         * separate entries for different seasons.
+         */
         rated.put(title + "season" + season, rating);
-        message = "success -> " + title + " was rated " + rating + " by " + username;
+        message =
+                "success -> " + title + " was rated with " + rating + " by " + username;
         return message;
     }
 

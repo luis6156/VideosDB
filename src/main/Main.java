@@ -1,5 +1,6 @@
 package main;
 
+import action.Action;
 import action.Command;
 import checker.Checkstyle;
 import checker.Checker;
@@ -75,7 +76,7 @@ public final class Main {
         //TODO add here the entry point to your implementation
         UserDB userDB = new UserDB();
         userDB.populateUserDB(input.getUsers());
-        Command.chooseCommand(userDB, input.getCommands(), fileWriter, arrayResult);
+        Action.chooseAction(userDB, input.getCommands(), fileWriter, arrayResult);
 
         fileWriter.closeJSON(arrayResult);
     }
