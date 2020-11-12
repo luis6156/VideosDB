@@ -75,7 +75,7 @@ public class User {
         return message;
     }
 
-    public String addRatingMovie(String title, double rating) throws IOException {
+    public String addRatingMovie(String title, double rating) {
         String message;
 
         // Video wasn't watched -> return error
@@ -96,7 +96,7 @@ public class User {
         return message;
     }
 
-    public String addRatingShow(String title, int season, double rating) throws IOException {
+    public String addRatingShow(String title, int season, double rating) {
         String message;
 
         // Video wasn't watched -> return error
@@ -116,7 +116,7 @@ public class User {
         * Here the key is the title and the season watched, that way we have
         * separate entries for different seasons.
         */
-        rated.put(title + season, rating);
+        rated.put(title + "season" + season, rating);
         message = "success -> " + title + " was rated " + rating + " by " + username;
         return message;
     }

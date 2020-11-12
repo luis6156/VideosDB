@@ -3,7 +3,6 @@ package database;
 import fileio.UserInputData;
 import user.User;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 
@@ -32,5 +31,14 @@ public class UserDB {
 
     public String addViews(String username, String title) {
         return userDB.get(username).addViews(title);
+    }
+
+    public String addRatingMovie(String username, String title, double rating) {
+        return userDB.get(username).addRatingMovie(title, rating);
+    }
+
+    public String addRatingShow(String username, String title, int season,
+                                double rating) {
+        return userDB.get(username).addRatingShow(title, season, rating);
     }
 }

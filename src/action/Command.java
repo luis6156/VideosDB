@@ -19,6 +19,16 @@ public class Command {
                 case "view":
                     message = userDB.addViews(action.getUsername(), action.getTitle());
                     break;
+                case "rating":
+                    if (action.getSeasonNumber() == 0) {
+                        message = userDB.addRatingMovie(action.getUsername(),
+                                action.getTitle(), action.getGrade());
+                    } else {
+                        message = userDB.addRatingShow(action.getUsername(),
+                                action.getTitle(),
+                                action.getSeasonNumber(), action.getGrade());
+                    }
+                    break;
                 default:
                     break;
             }
