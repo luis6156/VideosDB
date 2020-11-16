@@ -17,6 +17,8 @@ public abstract class Video {
 
     protected int total_duration;
 
+    protected double total_rating;
+
     public Video(final String title, final int year,
                  final ArrayList<String> genres,
                  final ArrayList<String> actors) {
@@ -26,10 +28,6 @@ public abstract class Video {
         this.actors = actors;
         favorites = 0;
         views = 0;
-    }
-
-    protected void setTotalDuration(int total_duration) {
-        this.total_duration = total_duration;
     }
 
     public void addFavorite() {
@@ -62,5 +60,9 @@ public abstract class Video {
 
     public int getTotalDuration() {
         return total_duration;
+    }
+
+    public double getTotalRating() {
+        return total_rating;
     }
 }

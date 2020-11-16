@@ -5,24 +5,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class User {
-    /**
-     * User's username
-     */
     private final String username;
-    /**
-     * Subscription Type
-     */
     private final String subscriptionType;
-    /**
-     * The history of the movies seen
-     */
     private final Map<String, Integer> history;
-    /**
-     * Movies added to favorites
-     */
     private final ArrayList<String> favoriteMovies;
 
-    private final HashMap<String, Double> rated;
+    private final HashMap<String, Double> rated = new HashMap<>();
 
     public User(final String username, final String subscriptionType,
                 final Map<String, Integer> history,
@@ -31,7 +19,6 @@ public class User {
         this.subscriptionType = subscriptionType;
         this.favoriteMovies = favoriteMovies;
         this.history = history;
-        rated = new HashMap<String, Double>();
     }
 
     public String addFavorite(String title) {
@@ -117,6 +104,10 @@ public class User {
         message =
                 "success -> " + title + " was rated with " + rating + " by " + username;
         return message;
+    }
+
+    public int getActivity() {
+        return rated.size();
     }
 
     public String getUsername() {

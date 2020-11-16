@@ -2,6 +2,7 @@ package video;
 
 import comparator.DurationCmp;
 import comparator.FavoriteCmp;
+import comparator.RatingCmp;
 import comparator.ViewCmp;
 import fileio.SerialInputData;
 
@@ -13,6 +14,7 @@ public class ShowDB extends VideoDB {
     private final SortedSet<Show> viewedShows = new TreeSet<>(new ViewCmp());
     private final SortedSet<Show> longestShows =
             new TreeSet<>(new DurationCmp());
+    private final SortedSet<Show> ratedShows = new TreeSet<>(new RatingCmp());
 
     public void populateVideoDB(List<SerialInputData> shows) {
         for (SerialInputData show : shows) {
@@ -47,6 +49,13 @@ public class ShowDB extends VideoDB {
         viewedShows.add(tmp);
     }
 
+    public void addRating(String title, int season, double rating) {
+        Show tmp = shows.get(title);
+        ratedShows.remove(tmp);
+        tmp.addRating(season, rating);
+        ratedShows.add(tmp);
+    }
+
     public String getTopK(String query, String year, String genre,
                                 int k) {
         List<String> list = new ArrayList<>();
@@ -61,8 +70,15 @@ public class ShowDB extends VideoDB {
                     }
                 }
                 break;
-            case "rating":
-                return list.toString();
+            case "ratings":
+                for (Show show : ratedShows) {
+                    if (validFilters(show, year, genre)) {
+                        list.add(show.getTitle());
+                    }
+                    if (list.size() == k) {
+                        break;
+                    }
+                }
             case "most_viewed":
                 for (Show show : viewedShows) {
                     if (validFilters(show, year, genre)) {
@@ -82,6 +98,8 @@ public class ShowDB extends VideoDB {
                         break;
                     }
                 }
+                break;
+            default:
                 break;
         }
 

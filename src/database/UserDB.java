@@ -1,21 +1,15 @@
 package database;
 
+import comparator.ActiveUserCmp;
 import fileio.UserInputData;
 import user.User;
-import video.MovieDB;
-import video.ShowDB;
-import video.VideoDB;
+import video.*;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class UserDB {
-    private final HashMap<String, User> userDB;
-
-    public UserDB() {
-        userDB = new HashMap<>();
-    }
+    private final HashMap<String, User> userDB = new HashMap<>();
+    private final SortedSet<User> activeUsers = new TreeSet<>(new ActiveUserCmp());
 
     public void populateUserDB(List<UserInputData> users, MovieDB movieDB,
                                ShowDB showDB) {
@@ -60,11 +54,35 @@ public class UserDB {
     }
 
     public String addRatingMovie(String username, String title, double rating) {
-        return userDB.get(username).addRatingMovie(title, rating);
+        User tmp = userDB.get(username);
+        activeUsers.remove(tmp);
+        String message = tmp.addRatingMovie(title, rating);
+        activeUsers.add(tmp);
+
+        return message;
     }
 
     public String addRatingShow(String username, String title, int season,
                                 double rating) {
-        return userDB.get(username).addRatingShow(title, season, rating);
+        User tmp = userDB.get(username);
+        activeUsers.remove(tmp);
+        String message = tmp.addRatingShow(title, season, rating);
+        activeUsers.add(tmp);
+
+        return message;
+    }
+
+    public String getTopK(int k) {
+        List<String> list = new ArrayList<>();
+        for (User user : activeUsers) {
+            if (user.getActivity() != 0) {
+                list.add(user.getUsername());
+            }
+            if (list.size() == k) {
+                break;
+            }
+        }
+
+        return list.toString();
     }
 }

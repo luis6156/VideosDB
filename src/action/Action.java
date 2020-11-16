@@ -23,7 +23,8 @@ public class Action {
                             array);
                     break;
                 case "query":
-                    Query.chooseQuery(movieDB, showDB, action, fileWriter,
+                    Query.chooseQuery(movieDB, showDB, userDB, action,
+                            fileWriter,
                             array);
                     break;
                 default:

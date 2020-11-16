@@ -28,9 +28,9 @@ public class Command {
                 break;
             case "view":
                 if (movieDB.isMovie(title)) {
-                    movieDB.addFavorites(title);
+                    movieDB.addViews(title);
                 } else if (showDB.isShow(title)) {
-                    showDB.addFavorites(title);
+                    showDB.addViews(title);
                 } else {
                     break;
                 }
@@ -38,10 +38,12 @@ public class Command {
                 break;
             case "rating":
                 if (action.getSeasonNumber() == 0) {
-                    movieDB.addViews(title);
+                    movieDB.addRating(title, action.getGrade());
                     message = userDB.addRatingMovie(action.getUsername(),
                             title, action.getGrade());
                 } else {
+                    showDB.addRating(title, action.getSeasonNumber(),
+                            action.getGrade());
                     message = userDB.addRatingShow(action.getUsername(),
                             title,
                             action.getSeasonNumber(), action.getGrade());

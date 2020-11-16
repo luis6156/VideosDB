@@ -1,5 +1,6 @@
 package action;
 
+import database.UserDB;
 import fileio.ActionInputData;
 import fileio.Writer;
 import org.json.simple.JSONArray;
@@ -10,6 +11,7 @@ import java.io.IOException;
 
 public class Query {
     public static void chooseQuery(MovieDB movieDB, ShowDB showDB,
+                                   UserDB userDB,
                                    ActionInputData action,
                                    Writer fileWriter, JSONArray array) throws IOException {
         String message = null;
@@ -27,6 +29,9 @@ public class Query {
                             action.getFilters().get(0).get(0),
                             action.getFilters().get(1).get(0),
                             action.getNumber());
+                break;
+            case "users":
+                message = userDB.getTopK(action.getNumber());
                 break;
             default:
                 message = "[]";

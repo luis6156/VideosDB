@@ -2,6 +2,7 @@ package video;
 
 import comparator.FavoriteCmp;
 import comparator.DurationCmp;
+import comparator.RatingCmp;
 import comparator.ViewCmp;
 import fileio.MovieInputData;
 
@@ -13,6 +14,7 @@ public class MovieDB extends VideoDB {
     private final SortedSet<Movie> viewedMovies = new TreeSet<>(new ViewCmp());
     private final SortedSet<Movie> longestMovies =
             new TreeSet<>(new DurationCmp());
+    private final SortedSet<Movie> ratedMovies = new TreeSet<>(new RatingCmp());
 
     public void populateMovieDB(List<MovieInputData> movies) {
         for (MovieInputData movie : movies) {
@@ -46,6 +48,13 @@ public class MovieDB extends VideoDB {
         viewedMovies.add(tmp);
     }
 
+    public void addRating(String title, double rating) {
+        Movie tmp = movies.get(title);
+        ratedMovies.remove(tmp);
+        tmp.addRating(rating);
+        ratedMovies.add(tmp);
+    }
+
     public String getTopK(String query, String year,
                                 String genre, int k) {
         List<String> list = new ArrayList<>();
@@ -60,8 +69,15 @@ public class MovieDB extends VideoDB {
                     }
                 }
                 break;
-            case "rating":
-                return list.toString();
+            case "ratings":
+                for (Movie movie : ratedMovies) {
+                    if (validFilters(movie, year, genre)) {
+                        list.add(movie.getTitle());
+                    }
+                    if (list.size() == k) {
+                        break;
+                    }
+                }
             case "most_viewed":
                 for (Movie movie : viewedMovies) {
                     if (validFilters(movie, year, genre)) {
@@ -81,6 +97,8 @@ public class MovieDB extends VideoDB {
                         break;
                     }
                 }
+                break;
+            default:
                 break;
         }
 
