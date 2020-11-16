@@ -1,0 +1,90 @@
+package video;
+
+import comparator.DurationCmp;
+import comparator.FavoriteCmp;
+import comparator.ViewCmp;
+import fileio.SerialInputData;
+
+import java.util.*;
+
+public class ShowDB extends VideoDB {
+    private final HashMap<String, Show> shows = new HashMap<>();
+    private final SortedSet<Show> favShows = new TreeSet<>(new FavoriteCmp());
+    private final SortedSet<Show> viewedShows = new TreeSet<>(new ViewCmp());
+    private final SortedSet<Show> longestShows =
+            new TreeSet<>(new DurationCmp());
+
+    public void populateVideoDB(List<SerialInputData> shows) {
+        for (SerialInputData show : shows) {
+            Show newShow = new Show(
+                    show.getTitle(),
+                    show.getYear(),
+                    show.getGenres(),
+                    show.getCast(),
+                    show.getNumberSeason(),
+                    show.getSeasons()
+            );
+            this.shows.put(show.getTitle(), newShow);
+            longestShows.add(newShow);
+        }
+    }
+
+    public boolean isShow(String title) {
+        return shows.containsKey(title);
+    }
+
+    public void addFavorites(String title) {
+        Show tmp = shows.get(title);
+        favShows.remove(tmp);
+        tmp.addFavorite();
+        favShows.add(tmp);
+    }
+
+    public void addViews(String title) {
+        Show tmp = shows.get(title);
+        viewedShows.remove(tmp);
+        tmp.addViews();
+        viewedShows.add(tmp);
+    }
+
+    public String getTopK(String query, String year, String genre,
+                                int k) {
+        List<String> list = new ArrayList<>();
+        switch (query) {
+            case "favorite":
+                for (Show show : favShows) {
+                    if (validFilters(show, year, genre)) {
+                        list.add(show.getTitle());
+                    }
+                    if (list.size() == k) {
+                        break;
+                    }
+                }
+                break;
+            case "rating":
+                return list.toString();
+            case "most_viewed":
+                for (Show show : viewedShows) {
+                    if (validFilters(show, year, genre)) {
+                        list.add(show.getTitle());
+                    }
+                    if (list.size() == k) {
+                        break;
+                    }
+                }
+                break;
+            case "longest":
+                for (Show show : longestShows) {
+                    if (validFilters(show, year, genre)) {
+                        list.add(show.getTitle());
+                    }
+                    if (list.size() == k) {
+                        break;
+                    }
+                }
+                break;
+        }
+
+        return list.toString();
+    }
+}

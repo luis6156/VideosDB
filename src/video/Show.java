@@ -16,5 +16,14 @@ public class Show extends Video {
         super(title, year, genres, cast);
         this.numberOfSeasons = numberOfSeasons;
         this.seasons = seasons;
+        setTotalDuration(getTotalDuration(seasons));
+    }
+
+    private int getTotalDuration(ArrayList<Season> seasons) {
+        int duration = 0;
+        for (Season season : seasons) {
+            duration += season.getDuration();
+        }
+        return duration;
     }
 }
