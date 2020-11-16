@@ -1,7 +1,6 @@
 package main;
 
 import action.Action;
-import action.Command;
 import checker.Checkstyle;
 import checker.Checker;
 import common.Constants;
@@ -10,6 +9,9 @@ import fileio.Input;
 import fileio.InputLoader;
 import fileio.Writer;
 import org.json.simple.JSONArray;
+import video.MovieDB;
+import video.Show;
+import video.ShowDB;
 
 import java.io.File;
 import java.io.IOException;
@@ -75,8 +77,14 @@ public final class Main {
 
         //TODO add here the entry point to your implementation
         UserDB userDB = new UserDB();
-        userDB.populateUserDB(input.getUsers());
-        Action.chooseAction(userDB, input.getCommands(), fileWriter, arrayResult);
+        MovieDB movieDB = new MovieDB();
+        ShowDB showDB = new ShowDB();
+        movieDB.populateMovieDB(input.getMovies());
+        showDB.populateVideoDB(input.getSerials());
+        userDB.populateUserDB(input.getUsers(), movieDB, showDB);
+        Action.chooseAction(movieDB, showDB, userDB, input.getCommands(),
+                fileWriter,
+                arrayResult);
 
         fileWriter.closeJSON(arrayResult);
     }
