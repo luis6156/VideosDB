@@ -28,10 +28,11 @@ public final class Test {
         if (inputDir != null) {
             Arrays.sort(inputDir);
 
-            Scanner scanner = new Scanner(System.in);
-            String fileName = scanner.next();
+            //Scanner scanner = new Scanner(System.in);
+            //String fileName = scanner.next();
             for (File file : inputDir) {
-                if (file.getName().equalsIgnoreCase(fileName)) {
+                if (file.getName().equalsIgnoreCase("single_recommendation_popular" +
+                        ".json")) {
                     Main.action(file.getAbsolutePath(), Constants.OUT_FILE);
                     break;
                 }

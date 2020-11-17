@@ -1,32 +1,16 @@
 package user;
 
-import fileio.Writer;
-import org.json.simple.JSONArray;
-
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class User {
-    /**
-     * User's username
-     */
+public class User implements Comparable<User> {
     private final String username;
-    /**
-     * Subscription Type
-     */
     private final String subscriptionType;
-    /**
-     * The history of the movies seen
-     */
     private final Map<String, Integer> history;
-    /**
-     * Movies added to favorites
-     */
     private final ArrayList<String> favoriteMovies;
 
-    private final HashMap<String, Double> rated;
+    private final HashMap<String, Double> rated = new HashMap<>();
 
     public User(final String username, final String subscriptionType,
                 final Map<String, Integer> history,
@@ -35,7 +19,6 @@ public class User {
         this.subscriptionType = subscriptionType;
         this.favoriteMovies = favoriteMovies;
         this.history = history;
-        rated = new HashMap<String, Double>();
     }
 
     public String addFavorite(String title) {
@@ -125,5 +108,21 @@ public class User {
 
     public String getUsername() {
         return username;
+    }
+
+    public Map<String, Integer> getHistory() {
+        return history;
+    }
+
+    public boolean isPremium() {
+        return !subscriptionType.equals("BASIC");
+    }
+
+    // Ascending order
+    @Override
+    public int compareTo(User other) {
+        int result = Integer.compare(this.rated.size(), other.rated.size());
+        if (result != 0) return result;
+        return this.username.compareTo(other.username);
     }
 }
