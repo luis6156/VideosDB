@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class User {
+public class User implements Comparable<User> {
     private final String username;
     private final String subscriptionType;
     private final Map<String, Integer> history;
@@ -106,15 +106,23 @@ public class User {
         return message;
     }
 
-    public int getActivity() {
-        return rated.size();
-    }
-
     public String getUsername() {
         return username;
     }
 
     public Map<String, Integer> getHistory() {
         return history;
+    }
+
+    public boolean isPremium() {
+        return !subscriptionType.equals("BASIC");
+    }
+
+    // Ascending order
+    @Override
+    public int compareTo(User other) {
+        int result = Integer.compare(this.rated.size(), other.rated.size());
+        if (result != 0) return result;
+        return this.username.compareTo(other.username);
     }
 }

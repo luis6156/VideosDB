@@ -30,6 +30,13 @@ public class Recommend {
                 message =
                         "BestRatedUnseenRecommendation result: " + BestRec.best(movieDB, showDB, userDB, username);
                 break;
+            case "popular":
+                if (userDB.checkUserSub(username)) {
+                    message =
+                            videoDB.getPopularVideo(userDB.getHistory(username));
+                } else {
+                    message = "PopularRecommendation cannot be applied!";
+                }
             default:
                 break;
         }

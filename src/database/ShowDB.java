@@ -5,10 +5,9 @@ import comparator.FavoriteCmp;
 import comparator.RatingCmp;
 import comparator.ViewCmp;
 import fileio.SerialInputData;
+import video.Genre;
 import video.Show;
-import video.Video;
 
-import java.lang.reflect.Array;
 import java.util.*;
 
 public class ShowDB extends VideoDB {

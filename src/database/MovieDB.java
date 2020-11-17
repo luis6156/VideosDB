@@ -5,6 +5,7 @@ import comparator.DurationCmp;
 import comparator.RatingCmp;
 import comparator.ViewCmp;
 import fileio.MovieInputData;
+import video.Genre;
 import video.Movie;
 import video.Video;
 

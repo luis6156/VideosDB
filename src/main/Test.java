@@ -31,7 +31,7 @@ public final class Test {
             //Scanner scanner = new Scanner(System.in);
             //String fileName = scanner.next();
             for (File file : inputDir) {
-                if (file.getName().equalsIgnoreCase("single_query_most_viewed_movie" +
+                if (file.getName().equalsIgnoreCase("single_recommendation_popular" +
                         ".json")) {
                     Main.action(file.getAbsolutePath(), Constants.OUT_FILE);
                     break;

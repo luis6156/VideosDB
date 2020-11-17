@@ -1,6 +1,5 @@
 package database;
 
-import comparator.ActiveUserCmp;
 import fileio.UserInputData;
 import user.User;
 
@@ -8,10 +7,10 @@ import java.util.*;
 
 public class UserDB {
     private final HashMap<String, User> userDB = new HashMap<>();
-    private final SortedSet<User> activeUsers = new TreeSet<>(new ActiveUserCmp());
+    private final SortedSet<User> activeUsers = new TreeSet<>();
 
     public void populateUserDB(List<UserInputData> users, MovieDB movieDB,
-                               ShowDB showDB) {
+                               ShowDB showDB, VideoDB videoDB) {
         String title;
         for (UserInputData user : users) {
             User newUser = new User(
@@ -34,6 +33,7 @@ public class UserDB {
                 if (movieDB.isMovie(title)) {
                     for (int i = 0; i < entry.getValue(); ++i) {
                         movieDB.addViews(title);
+                        videoDB.addGenreViews(title);
                     }
                 } else if (showDB.isShow(title)) {
                     for (int i = 0; i < entry.getValue(); ++i) {
@@ -80,12 +80,16 @@ public class UserDB {
         return message;
     }
 
+    public boolean checkUserSub(String username) {
+        return userDB.get(username).isPremium();
+    }
+
     public String getTopK(int k) {
         List<String> list = new ArrayList<>();
         for (User user : activeUsers) {
-            if (user.getActivity() != 0) {
+            //if (user.getActivity() != 0) {
                 list.add(user.getUsername());
-            }
+            //}
             if (list.size() == k) {
                 break;
             }

@@ -11,9 +11,9 @@ public abstract class Video {
 
     protected final ArrayList<String> actors;
 
-    protected int favorites;
+    protected int favorites = 0;
 
-    protected int views;
+    protected int views = 0;
 
     protected int total_duration = 0;
 
@@ -26,8 +26,6 @@ public abstract class Video {
         this.year = year;
         this.genres = genres;
         this.actors = actors;
-        favorites = 0;
-        views = 0;
     }
 
     public void addFavorite() {
