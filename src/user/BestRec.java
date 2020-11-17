@@ -3,14 +3,10 @@ package user;
 import database.MovieDB;
 import database.ShowDB;
 import database.UserDB;
-import database.VideoDB;
 import video.Movie;
 import video.Show;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.SortedSet;
 
 public class BestRec {
     public static String best(MovieDB movieDB, ShowDB showDB, UserDB userDB,

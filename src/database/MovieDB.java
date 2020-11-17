@@ -5,9 +5,7 @@ import comparator.DurationCmp;
 import comparator.RatingCmp;
 import comparator.ViewCmp;
 import fileio.MovieInputData;
-import video.Genre;
 import video.Movie;
-import video.Video;
 
 import java.util.*;
 
@@ -118,5 +116,23 @@ public class MovieDB extends VideoDB {
 
     public List<Movie> getTopRatedMovies() {
         return new ArrayList<>(ratedMovies);
+    }
+
+    public String getFavoriteMovie(List<String> history) {
+        String message = "FavoriteRecommendation result: ";
+        boolean found = true;
+        for (Movie movie : favMovies) {
+            for (String s : history) {
+                if (movie.getTitle().equals(s)) {
+                    found = false;
+                    break;
+                }
+            }
+            if (found) {
+                return message + movie.getTitle();
+            }
+            found = true;
+        }
+        return message;
     }
 }

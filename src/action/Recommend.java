@@ -11,8 +11,6 @@ import user.BestRec;
 import user.StandardRec;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.Map;
 
 public class Recommend {
     public static void chooseRec(VideoDB videoDB, MovieDB movieDB,
@@ -37,6 +35,18 @@ public class Recommend {
                 } else {
                     message = "PopularRecommendation cannot be applied!";
                 }
+                break;
+            case "favorite":
+                if (userDB.checkUserSub(username)) {
+                    message =
+                            movieDB.getFavoriteMovie(userDB.getHistory(username));
+                } else {
+                    message = "FavoriteRecommendation cannot be applied!";
+                }
+                break;
+            case "search":
+
+                break;
             default:
                 break;
         }

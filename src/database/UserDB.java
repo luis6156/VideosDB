@@ -87,9 +87,9 @@ public class UserDB {
     public String getTopK(int k) {
         List<String> list = new ArrayList<>();
         for (User user : activeUsers) {
-            //if (user.getActivity() != 0) {
+            if (user.isActive()) {
                 list.add(user.getUsername());
-            //}
+            }
             if (list.size() == k) {
                 break;
             }

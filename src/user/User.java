@@ -125,4 +125,8 @@ public class User implements Comparable<User> {
         if (result != 0) return result;
         return this.username.compareTo(other.username);
     }
+
+    public boolean isActive() {
+        return rated.size() != 0;
+    }
 }
