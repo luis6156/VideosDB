@@ -3,7 +3,6 @@ package database;
 import comparator.ActiveUserCmp;
 import fileio.UserInputData;
 import user.User;
-import video.*;
 
 import java.util.*;
 
@@ -43,6 +42,15 @@ public class UserDB {
                 }
             }
         }
+    }
+
+    public boolean hasUser(String username) {
+        return userDB.containsKey(username);
+    }
+
+    public List<String> getHistory(String username) {
+        Map<String, Integer> history = userDB.get(username).getHistory();
+        return new ArrayList<>(history.keySet());
     }
 
     public String addFavorites(String username, String title) {

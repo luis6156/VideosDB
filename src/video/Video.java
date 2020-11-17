@@ -15,9 +15,9 @@ public abstract class Video {
 
     protected int views;
 
-    protected int total_duration;
+    protected int total_duration = 0;
 
-    protected double total_rating;
+    protected double total_rating = 0;
 
     public Video(final String title, final int year,
                  final ArrayList<String> genres,
@@ -52,6 +52,10 @@ public abstract class Video {
 
     public int getYear() {
         return year;
+    }
+
+    public ArrayList<String> getActors() {
+        return actors;
     }
 
     public ArrayList<String> getGenres() {

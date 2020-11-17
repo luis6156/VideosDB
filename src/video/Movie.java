@@ -15,7 +15,7 @@ public class Movie extends Video {
         this.total_duration = this.duration;
     }
 
-    public void setTotalRating() {
+    private void setTotalRating() {
         double total_rating = 0;
         for (Double rating : ratings) {
             total_rating += rating;

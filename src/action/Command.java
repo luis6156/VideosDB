@@ -1,16 +1,19 @@
 package action;
 
+import database.ActorDB;
 import database.UserDB;
 import fileio.ActionInputData;
 import fileio.Writer;
 import org.json.simple.JSONArray;
-import video.MovieDB;
-import video.ShowDB;
+import database.MovieDB;
+import database.ShowDB;
 
 import java.io.IOException;
 
 public class Command {
-    public static void chooseCommand(MovieDB movieDB, ShowDB showDB, UserDB userDB,
+    public static void chooseCommand(ActorDB actorDB, MovieDB movieDB,
+                                     ShowDB showDB,
+                                     UserDB userDB,
                                      ActionInputData action, Writer fileWriter, JSONArray array) throws IOException {
         String title = action.getTitle();
         String message = null;
@@ -39,11 +42,15 @@ public class Command {
             case "rating":
                 if (action.getSeasonNumber() == 0) {
                     movieDB.addRating(title, action.getGrade());
+                    actorDB.addRating(movieDB.getMovieActors(title), movieDB,
+                            showDB);
                     message = userDB.addRatingMovie(action.getUsername(),
                             title, action.getGrade());
                 } else {
                     showDB.addRating(title, action.getSeasonNumber(),
                             action.getGrade());
+                    actorDB.addRating(showDB.getShowActors(title), movieDB,
+                            showDB);
                     message = userDB.addRatingShow(action.getUsername(),
                             title,
                             action.getSeasonNumber(), action.getGrade());

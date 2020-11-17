@@ -1,23 +1,26 @@
-package video;
+package database;
 
 import comparator.DurationCmp;
 import comparator.FavoriteCmp;
 import comparator.RatingCmp;
 import comparator.ViewCmp;
 import fileio.SerialInputData;
+import video.Show;
+import video.Video;
 
+import java.lang.reflect.Array;
 import java.util.*;
 
 public class ShowDB extends VideoDB {
-    private final HashMap<String, Show> shows = new HashMap<>();
+    private final HashMap<String, Show> showDB = new HashMap<>();
     private final SortedSet<Show> favShows = new TreeSet<>(new FavoriteCmp());
     private final SortedSet<Show> viewedShows = new TreeSet<>(new ViewCmp());
     private final SortedSet<Show> longestShows =
             new TreeSet<>(new DurationCmp());
     private final SortedSet<Show> ratedShows = new TreeSet<>(new RatingCmp());
 
-    public void populateVideoDB(List<SerialInputData> shows) {
-        for (SerialInputData show : shows) {
+    public void populateVideoDB(List<SerialInputData> showDB) {
+        for (SerialInputData show : showDB) {
             Show newShow = new Show(
                     show.getTitle(),
                     show.getYear(),
@@ -26,37 +29,45 @@ public class ShowDB extends VideoDB {
                     show.getNumberSeason(),
                     show.getSeasons()
             );
-            this.shows.put(show.getTitle(), newShow);
+            this.showDB.put(show.getTitle(), newShow);
             longestShows.add(newShow);
         }
     }
 
     public boolean isShow(String title) {
-        return shows.containsKey(title);
+        return showDB.containsKey(title);
+    }
+
+    public double getShowRating(String title) {
+        return showDB.get(title).getTotalRating();
+    }
+
+    public List<String> getShowActors(String title) {
+        return showDB.get(title).getActors();
     }
 
     public void addFavorites(String title) {
-        Show tmp = shows.get(title);
+        Show tmp = showDB.get(title);
         favShows.remove(tmp);
         tmp.addFavorite();
         favShows.add(tmp);
     }
 
     public void addViews(String title) {
-        Show tmp = shows.get(title);
+        Show tmp = showDB.get(title);
         viewedShows.remove(tmp);
         tmp.addViews();
         viewedShows.add(tmp);
     }
 
     public void addRating(String title, int season, double rating) {
-        Show tmp = shows.get(title);
+        Show tmp = showDB.get(title);
         ratedShows.remove(tmp);
         tmp.addRating(season, rating);
         ratedShows.add(tmp);
     }
 
-    public String getTopK(String query, String year, String genre,
+    public List<String> getTopK(String query, String year, String genre,
                                 int k) {
         List<String> list = new ArrayList<>();
         switch (query) {
@@ -103,6 +114,10 @@ public class ShowDB extends VideoDB {
                 break;
         }
 
-        return list.toString();
+        return list;
+    }
+
+    public List<Show> getTopRatedShows() {
+        return new ArrayList<>(ratedShows);
     }
 }

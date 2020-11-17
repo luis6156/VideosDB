@@ -4,20 +4,19 @@ import action.Action;
 import checker.Checkstyle;
 import checker.Checker;
 import common.Constants;
-import database.UserDB;
+import database.*;
 import fileio.Input;
 import fileio.InputLoader;
 import fileio.Writer;
 import org.json.simple.JSONArray;
-import video.MovieDB;
-import video.Show;
-import video.ShowDB;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -77,12 +76,17 @@ public final class Main {
 
         //TODO add here the entry point to your implementation
         UserDB userDB = new UserDB();
+        VideoDB videoDB = new VideoDB();
         MovieDB movieDB = new MovieDB();
         ShowDB showDB = new ShowDB();
+        ActorDB actorDB = new ActorDB();
+        videoDB.populateVideoDB(input.getMovies(), input.getSerials());
         movieDB.populateMovieDB(input.getMovies());
         showDB.populateVideoDB(input.getSerials());
         userDB.populateUserDB(input.getUsers(), movieDB, showDB);
-        Action.chooseAction(movieDB, showDB, userDB, input.getCommands(),
+        actorDB.populateActorDB(input.getActors(), movieDB, showDB);
+        Action.chooseAction(videoDB, actorDB, movieDB, showDB, userDB,
+                input.getCommands(),
                 fileWriter,
                 arrayResult);
 

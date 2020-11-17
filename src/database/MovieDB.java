@@ -1,23 +1,25 @@
-package video;
+package database;
 
 import comparator.FavoriteCmp;
 import comparator.DurationCmp;
 import comparator.RatingCmp;
 import comparator.ViewCmp;
 import fileio.MovieInputData;
+import video.Movie;
+import video.Video;
 
 import java.util.*;
 
 public class MovieDB extends VideoDB {
-    private final HashMap<String, Movie> movies = new HashMap<>();
+    private final HashMap<String, Movie> movieDB = new HashMap<>();
     private final SortedSet<Movie> favMovies = new TreeSet<>(new FavoriteCmp());
     private final SortedSet<Movie> viewedMovies = new TreeSet<>(new ViewCmp());
     private final SortedSet<Movie> longestMovies =
             new TreeSet<>(new DurationCmp());
     private final SortedSet<Movie> ratedMovies = new TreeSet<>(new RatingCmp());
 
-    public void populateMovieDB(List<MovieInputData> movies) {
-        for (MovieInputData movie : movies) {
+    public void populateMovieDB(List<MovieInputData> movieDB) {
+        for (MovieInputData movie : movieDB) {
             Movie newMovie = new Movie(
                     movie.getTitle(),
                     movie.getCast(),
@@ -25,37 +27,45 @@ public class MovieDB extends VideoDB {
                     movie.getYear(),
                     movie.getDuration()
             );
-            this.movies.put(movie.getTitle(), newMovie);
+            this.movieDB.put(movie.getTitle(), newMovie);
             longestMovies.add(newMovie);
         }
     }
 
     public boolean isMovie(String title) {
-        return movies.containsKey(title);
+        return movieDB.containsKey(title);
+    }
+
+    public double getMovieRating(String title) {
+        return movieDB.get(title).getTotalRating();
+    }
+
+    public List<String> getMovieActors(String title) {
+        return movieDB.get(title).getActors();
     }
 
     public void addFavorites(String title) {
-        Movie tmp = movies.get(title);
+        Movie tmp = movieDB.get(title);
         favMovies.remove(tmp);
         tmp.addFavorite();
         favMovies.add(tmp);
     }
 
     public void addViews(String title) {
-        Movie tmp = movies.get(title);
+        Movie tmp = movieDB.get(title);
         viewedMovies.remove(tmp);
         tmp.addViews();
         viewedMovies.add(tmp);
     }
 
     public void addRating(String title, double rating) {
-        Movie tmp = movies.get(title);
+        Movie tmp = movieDB.get(title);
         ratedMovies.remove(tmp);
         tmp.addRating(rating);
         ratedMovies.add(tmp);
     }
 
-    public String getTopK(String query, String year,
+    public List<String> getTopK(String query, String year,
                                 String genre, int k) {
         List<String> list = new ArrayList<>();
         switch (query) {
@@ -102,6 +112,10 @@ public class MovieDB extends VideoDB {
                 break;
         }
 
-        return list.toString();
+        return list;
+    }
+
+    public List<Movie> getTopRatedMovies() {
+        return new ArrayList<>(ratedMovies);
     }
 }

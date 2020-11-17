@@ -113,4 +113,8 @@ public class User {
     public String getUsername() {
         return username;
     }
+
+    public Map<String, Integer> getHistory() {
+        return history;
+    }
 }
