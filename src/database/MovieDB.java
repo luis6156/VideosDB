@@ -122,6 +122,7 @@ public class MovieDB {
                         break;
                     }
                 }
+                break;
             case "most_viewed":
                 for (Movie movie : viewedMovies) {
                     if (validFilters(movie, year, genre)) {

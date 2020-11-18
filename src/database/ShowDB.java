@@ -102,6 +102,7 @@ public class ShowDB {
                         break;
                     }
                 }
+                break;
             case "most_viewed":
                 for (Show show : viewedShows) {
                     if (validFilters(show, year, genre)) {
