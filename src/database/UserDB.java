@@ -32,12 +32,11 @@ public class UserDB {
                 title = entry.getKey();
                 if (movieDB.isMovie(title)) {
                     for (int i = 0; i < entry.getValue(); ++i) {
-                        movieDB.addViews(title);
-                        videoDB.addGenreViews(title);
+                        movieDB.addViews(videoDB, title);
                     }
                 } else if (showDB.isShow(title)) {
                     for (int i = 0; i < entry.getValue(); ++i) {
-                        showDB.addViews(title);
+                        showDB.addViews(videoDB, title);
                     }
                 }
             }
@@ -48,9 +47,9 @@ public class UserDB {
         return userDB.containsKey(username);
     }
 
-    public List<String> getHistory(String username) {
+    public Map<String, Integer> getHistory(String username) {
         Map<String, Integer> history = userDB.get(username).getHistory();
-        return new ArrayList<>(history.keySet());
+        return new HashMap<>(history);
     }
 
     public String addFavorites(String username, String title) {

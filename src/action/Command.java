@@ -1,17 +1,15 @@
 package action;
 
-import database.ActorDB;
-import database.UserDB;
+import database.*;
 import fileio.ActionInputData;
 import fileio.Writer;
 import org.json.simple.JSONArray;
-import database.MovieDB;
-import database.ShowDB;
 
 import java.io.IOException;
 
 public class Command {
-    public static void chooseCommand(ActorDB actorDB, MovieDB movieDB,
+    public static void chooseCommand(ActorDB actorDB,
+                                     VideoDB videoDB, MovieDB movieDB,
                                      ShowDB showDB,
                                      UserDB userDB,
                                      ActionInputData action, Writer fileWriter, JSONArray array) throws IOException {
@@ -31,9 +29,9 @@ public class Command {
                 break;
             case "view":
                 if (movieDB.isMovie(title)) {
-                    movieDB.addViews(title);
+                    movieDB.addViews(videoDB, title);
                 } else if (showDB.isShow(title)) {
-                    showDB.addViews(title);
+                    showDB.addViews(videoDB, title);
                 } else {
                     break;
                 }
