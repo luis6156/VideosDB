@@ -31,23 +31,7 @@ public class MovieDB {
             );
             this.movieDB.put(movie.getTitle(), newMovie);
             longestMovies.add(newMovie);
-        }
-    }
-
-    public void updateGenreRatingDB(Video video) {
-        String genreName;
-
-        for (int i = 0; i < video.getGenres().size(); ++i) {
-            genreName = video.getGenres().get(i);
-            SortedSet<Video> genre =
-                    genreRatingDB.get(genreName);
-            if (genre != null) {
-                genre.remove(video);
-            } else {
-                genre = new TreeSet<>(new RatingCmp());
-                genreRatingDB.put(genreName, genre);
-            }
-            genre.add(video);
+            ratedMovies.add(newMovie);
         }
     }
 
@@ -78,13 +62,13 @@ public class MovieDB {
         videoDB.updateGenreViews(tmp);
     }
 
-    public void addRating(String title, double rating) {
+    public void addRating(VideoDB videoDB, String title, double rating) {
         Movie tmp;
         tmp = movieDB.get(title);
         ratedMovies.remove(tmp);
         tmp.addRating(rating);
         ratedMovies.add(tmp);
-        updateGenreRatingDB(tmp);
+        videoDB.updateGenreVideoRatings(tmp);
     }
 
     public boolean validFilters(Video video, String year, String genre) {
@@ -115,7 +99,7 @@ public class MovieDB {
                 break;
             case "ratings":
                 for (Movie movie : ratedMovies) {
-                    if (validFilters(movie, year, genre)) {
+                    if (validFilters(movie, year, genre) && movie.getTotalRating() != 0) {
                         list.add(movie.getTitle());
                     }
                     if (list.size() == k) {
@@ -156,38 +140,5 @@ public class MovieDB {
 
     public List<Movie> getTopFavMovies() {
         return new ArrayList<>(favMovies);
-    }
-
-    public String getSearchedMovies(Map<String, Integer> history, String genre) {
-        StringBuilder stringBuilder = new StringBuilder();
-        String message = "SearchRecommendation result: ";
-        boolean found = false;
-
-//        List<String> historyCpy = new ArrayList<>(history);
-//        SortedSet<Video> videos = genreRatingDB.get(genre);
-//
-//        if (videos == null) {
-//            return "SearchRecommendation cannot be applied!";
-//        }
-//
-//        for (Video video : videos) {
-//            for (String s: historyCpy) {
-//                if (video.getTitle().equals(s)) {
-//                    found = true;
-//                    historyCpy.remove(s);
-//                    break;
-//                }
-//            }
-//            if (!found) {
-//                stringBuilder.append(video.getTitle());
-//            }
-//            found = false;
-//        }
-//
-//        if (stringBuilder.toString().equals("")) {
-//            return message;
-//        }
-
-        return message + stringBuilder.toString();
     }
 }

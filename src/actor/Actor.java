@@ -4,49 +4,45 @@ import database.MovieDB;
 import database.ShowDB;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class Actor {
     private final String name;
-    private String careerDescription;
-    private ArrayList<String> filmography;
-    private Map<ActorsAwards, Integer> awards;
+    private final String careerDescription;
+    private final Map<String, Double> filmography = new HashMap<>();
+    private final Map<ActorsAwards, Integer> awards;
     private double actor_rating = 0;
 
-    public Actor(MovieDB movieDB, ShowDB showDB, final String name,
+    public Actor(final String name,
                  final String careerDescription,
                           final ArrayList<String> filmography,
                           final Map<ActorsAwards, Integer> awards) {
         this.name = name;
         this.careerDescription = careerDescription;
-        this.filmography = filmography;
         this.awards = awards;
-        setActorRating(movieDB, showDB);
+        for (String title : filmography) {
+            this.filmography.put(title, 0.0);
+        }
     }
 
-    public void setActorRating(MovieDB movieDB, ShowDB showDB) {
-        String title;
-        int count = 0;
-        double tmp_rating = 0, check_rating;
+    public void addActorRating(String title, double rating) {
+        int ratedMovies = 0;
 
-        for (String s : filmography) {
-            title = s;
-            if (movieDB.isMovie(title)) {
-                check_rating = movieDB.getMovieRating(title);
-                if (check_rating != 0) {
-                    tmp_rating += check_rating;
-                    ++count;
-                }
-            } else if (showDB.isShow(title)) {
-                check_rating = showDB.getShowRating(title);
-                if (check_rating != 0) {
-                    tmp_rating += check_rating;
-                    ++count;
-                }
+        double old_rating = filmography.get(title);
+        filmography.replace(title, rating);
+        double totalRating = 0;
+//        actor_rating = actor_rating * filmography.size() - old_rating + rating;
+//        actor_rating /= filmography.size();
+        for (Double videoRating : filmography.values()) {
+            if (videoRating != 0) {
+                totalRating += videoRating;
+                ++ratedMovies;
             }
         }
-
-        actor_rating = tmp_rating / count;
+        actor_rating = totalRating / ratedMovies;
     }
 
     public String getName() {

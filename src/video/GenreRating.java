@@ -1,28 +1,34 @@
 package video;
 
-import comparator.RatingCmp;
-
-import java.util.List;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.*;
 
 public class GenreRating {
     private final String title;
-    private final SortedSet<Video> videoRatings =
-            new TreeSet<>(new RatingCmp());
+    private final List<String> videos = new ArrayList<>();
+    private double rating = 0;
+    private int num_ratings = 0;
 
     public GenreRating(String title) {
         this.title = title;
     }
 
-    public void resortRatings(Video oldVideo, Video newVideo) {
-        if (videoRatings.contains(oldVideo)) {
-            videoRatings.remove(oldVideo);
-            videoRatings.add(newVideo);
-        }
+    public void addRating(double rating) {
+        this.rating += rating;
+        this.rating /= ++num_ratings;
     }
-    public void addVideos(Video video) {
-        videoRatings.add(video);
+
+    public void addVideos(String video) {
+        videos.add(videos.size(), video);
+    }
+
+    public String getUnwatchedVideo(Map<String, Integer> history) {
+        for (String video : videos) {
+            if (!history.containsKey(video)) {
+                return video;
+            }
+        }
+
+        return null;
     }
 
 //    public String getUnwatchedVideo(List<String> history) {
@@ -41,5 +47,13 @@ public class GenreRating {
 //            found = true;
 //        }
 //        return message;
+//    }
+
+    // Ascending order
+//    @Override
+//    public int compareTo(GenreRating other) {
+//        int result = Integer.compare(this.rating, other.rating);
+//        if (result != 0) return -result;
+//        return this.title.compareTo(other.title);
 //    }
 }

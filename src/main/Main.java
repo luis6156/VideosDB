@@ -84,7 +84,7 @@ public final class Main {
         movieDB.populateMovieDB(input.getMovies());
         showDB.populateVideoDB(input.getSerials());
         userDB.populateUserDB(input.getUsers(), movieDB, showDB, videoDB);
-        actorDB.populateActorDB(input.getActors(), movieDB, showDB);
+        actorDB.populateActorDB(input.getActors());
         Action.chooseAction(videoDB, actorDB, movieDB, showDB, userDB,
                 input.getCommands(),
                 fileWriter,

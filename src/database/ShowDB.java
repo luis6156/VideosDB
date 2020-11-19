@@ -30,6 +30,7 @@ public class ShowDB {
             );
             this.showDB.put(show.getTitle(), newShow);
             longestShows.add(newShow);
+            ratedShows.add(newShow);
         }
     }
 
@@ -60,11 +61,13 @@ public class ShowDB {
         videoDB.updateGenreViews(tmp);
     }
 
-    public void addRating(String title, int season, double rating) {
+    public void addRating(VideoDB videoDB, String title, int season,
+                          double rating) {
         Show tmp = showDB.get(title);
         ratedShows.remove(tmp);
         tmp.addRating(season, rating);
         ratedShows.add(tmp);
+        videoDB.updateGenreVideoRatings(tmp);
     }
 
     public boolean validFilters(Video video, String year, String genre) {
@@ -95,7 +98,7 @@ public class ShowDB {
                 break;
             case "ratings":
                 for (Show show : ratedShows) {
-                    if (validFilters(show, year, genre)) {
+                    if (validFilters(show, year, genre) && show.getTotalRating() != 0) {
                         list.add(show.getTitle());
                     }
                     if (list.size() == k) {

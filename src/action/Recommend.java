@@ -46,9 +46,10 @@ public class Recommend {
             case "search":
                 if (userDB.checkUserSub(username)) {
                     message =
-                            movieDB.getSearchedMovies(userDB.getHistory(username), action.getGenre());
+                            videoDB.getSearchedVideo(action.getGenre(),
+                                    userDB.getHistory(username));
                 } else {
-                    message = "FavoriteRecommendation cannot be applied!";
+                    message = "SearchRecommendation cannot be applied!";
                 }
                 break;
             default:

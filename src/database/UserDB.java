@@ -2,6 +2,8 @@ package database;
 
 import fileio.UserInputData;
 import user.User;
+import video.Movie;
+import video.Show;
 
 import java.util.*;
 
@@ -52,28 +54,41 @@ public class UserDB {
         return new HashMap<>(history);
     }
 
-    public String addFavorites(String username, String title) {
-        return userDB.get(username).addFavorite(title);
+    public String addFavorites(MovieDB movieDB, ShowDB showDB, String username,
+                               String title) {
+        return userDB.get(username).addFavorite(movieDB, showDB, title);
     }
 
-    public String addViews(String username, String title) {
-        return userDB.get(username).addViews(title);
+    public String addViews(VideoDB videoDB, MovieDB movieDB, ShowDB showDB,
+                           String username,
+                           String title) {
+        return userDB.get(username).addViews(videoDB, movieDB, showDB, title);
     }
 
-    public String addRatingMovie(String username, String title, double rating) {
+    public String addRatingMovie(ActorDB actorDB, VideoDB videoDB,
+                                 MovieDB movieDB,
+                                 String username,
+                                 String title,
+                                  double rating) {
         User tmp = userDB.get(username);
         activeUsers.remove(tmp);
-        String message = tmp.addRatingMovie(title, rating);
+        String message = tmp.addRatingMovie(actorDB, videoDB, movieDB, title,
+                rating);
         activeUsers.add(tmp);
 
         return message;
     }
 
-    public String addRatingShow(String username, String title, int season,
+    public String addRatingShow(ActorDB actorDB, VideoDB videoDB, ShowDB showDB,
+                                 String username,
+                                String title,
+                                int season,
                                 double rating) {
         User tmp = userDB.get(username);
         activeUsers.remove(tmp);
-        String message = tmp.addRatingShow(title, season, rating);
+        String message = tmp.addRatingShow(actorDB, videoDB, showDB, title,
+                season,
+                rating);
         activeUsers.add(tmp);
 
         return message;
