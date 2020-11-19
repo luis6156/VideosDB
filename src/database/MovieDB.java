@@ -5,14 +5,15 @@ import comparator.DurationCmp;
 import comparator.RatingCmp;
 import comparator.ViewCmp;
 import fileio.MovieInputData;
-import video.Genre;
 import video.Movie;
 import video.Video;
 
 import java.util.*;
 
-public class MovieDB extends VideoDB {
+public class MovieDB {
     private final HashMap<String, Movie> movieDB = new HashMap<>();
+    private final HashMap<String, SortedSet<Video>> genreRatingDB =
+            new HashMap<>();
     private final SortedSet<Movie> favMovies = new TreeSet<>(new FavoriteCmp());
     private final SortedSet<Movie> viewedMovies = new TreeSet<>(new ViewCmp());
     private final SortedSet<Movie> longestMovies =
@@ -30,6 +31,7 @@ public class MovieDB extends VideoDB {
             );
             this.movieDB.put(movie.getTitle(), newMovie);
             longestMovies.add(newMovie);
+            ratedMovies.add(newMovie);
         }
     }
 
@@ -52,18 +54,33 @@ public class MovieDB extends VideoDB {
         favMovies.add(tmp);
     }
 
-    public void addViews(String title) {
+    public void addViews(VideoDB videoDB, String title) {
         Movie tmp = movieDB.get(title);
         viewedMovies.remove(tmp);
         tmp.addViews();
         viewedMovies.add(tmp);
+        videoDB.updateGenreViews(tmp);
     }
 
-    public void addRating(String title, double rating) {
-        Movie tmp = movieDB.get(title);
+    public void addRating(VideoDB videoDB, String title, double rating) {
+        Movie tmp;
+        tmp = movieDB.get(title);
         ratedMovies.remove(tmp);
         tmp.addRating(rating);
         ratedMovies.add(tmp);
+        videoDB.updateGenreVideoRatings(tmp);
+    }
+
+    public boolean validFilters(Video video, String year, String genre) {
+        if (year != null && genre != null) {
+            return video.getGenres().contains(genre) && video.getYear() == Integer.parseInt(year);
+        } else if (year == null && genre != null) {
+            return video.getGenres().contains(genre);
+        } else if (year != null) {
+            return video.getYear() == Integer.parseInt(year);
+        } else {
+            return true;
+        }
     }
 
     public List<String> getTopK(String query, String year,
@@ -82,13 +99,14 @@ public class MovieDB extends VideoDB {
                 break;
             case "ratings":
                 for (Movie movie : ratedMovies) {
-                    if (validFilters(movie, year, genre)) {
+                    if (validFilters(movie, year, genre) && movie.getTotalRating() != 0) {
                         list.add(movie.getTitle());
                     }
                     if (list.size() == k) {
                         break;
                     }
                 }
+                break;
             case "most_viewed":
                 for (Movie movie : viewedMovies) {
                     if (validFilters(movie, year, genre)) {
@@ -118,5 +136,9 @@ public class MovieDB extends VideoDB {
 
     public List<Movie> getTopRatedMovies() {
         return new ArrayList<>(ratedMovies);
+    }
+
+    public List<Movie> getTopFavMovies() {
+        return new ArrayList<>(favMovies);
     }
 }

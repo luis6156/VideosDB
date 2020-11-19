@@ -17,7 +17,8 @@ public class Action {
         for (ActionInputData action : actions) {
             switch (action.getActionType()) {
                 case "command":
-                    Command.chooseCommand(actorDB, movieDB, showDB, userDB,
+                    Command.chooseCommand(actorDB, videoDB, movieDB, showDB,
+                            userDB,
                             action,
                             fileWriter,
                             array);

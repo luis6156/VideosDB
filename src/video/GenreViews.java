@@ -2,14 +2,14 @@ package video;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Map;
 
-public class Genre implements Comparable<Genre> {
+public class GenreViews implements Comparable<GenreViews> {
     private final String title;
     private final List<String> videos = new ArrayList<>();
     private int views = 0;
 
-    public Genre(String title) {
+    public GenreViews(String title) {
         this.title = title;
     }
 
@@ -21,19 +21,19 @@ public class Genre implements Comparable<Genre> {
         videos.add(videos.size(), video);
     }
 
-    public String getUnwatchedVideo(List<String> history) {
-        List<String> differences =
-                videos.stream().filter(element -> !history.contains(element)).collect(Collectors.toList());
-
-        if (differences.isEmpty()) {
-            return null;
+    public String getUnwatchedVideo(Map<String, Integer> history) {
+        for (String video : videos) {
+            if (!history.containsKey(video)) {
+                return video;
+            }
         }
 
-        return differences.get(0);
+        return null;
     }
 
+    // Descending order
     @Override
-    public int compareTo(Genre other) {
+    public int compareTo(GenreViews other) {
         int result = Integer.compare(this.views, other.views);
         if (result != 0) return -result;
         return this.title.compareTo(other.title);

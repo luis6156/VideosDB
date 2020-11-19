@@ -1,27 +1,29 @@
 package database;
 
+import comparator.RatingCmp;
 import fileio.MovieInputData;
 import fileio.SerialInputData;
-import fileio.ShowInput;
-import video.Genre;
+import video.GenreViews;
 import video.Movie;
 import video.Show;
 import video.Video;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class VideoDB {
     private final List<String> unorderedVideos = new ArrayList<>();
-    private final HashMap<String, Video> orderedVideos = new HashMap<>();
-    protected final Map<String, Genre> videoByGenre = new HashMap<>();
-    protected final SortedSet<Genre> bestGenres = new TreeSet<>();
+    private final Map<String, Integer> videoByIndex = new HashMap<>();
+    private final Map<String, GenreViews> genreViews = new HashMap<>();
+    private final SortedSet<GenreViews> mostViewedGenres = new TreeSet<>();
+    private final Map<String, SortedSet<Video>> genreVideoRatings =
+            new HashMap<>();
+    private int count = 0;
 
     public void populateVideoDB(List<MovieInputData> movieDB,
                                 List<SerialInputData> showDB) {
-
         for (MovieInputData movie : movieDB) {
             unorderedVideos.add(unorderedVideos.size(), movie.getTitle());
+            videoByIndex.put(movie.getTitle(), count++);
             Movie newMovie = new Movie(
                     movie.getTitle(),
                     movie.getCast(),
@@ -29,11 +31,12 @@ public class VideoDB {
                     movie.getYear(),
                     movie.getDuration()
             );
-            orderedVideos.put(movie.getTitle(), newMovie);
-            populateGenre(newMovie);
+            populateGenreViews(newMovie);
+            updateGenreVideoRatings(newMovie);
         }
         for (SerialInputData show : showDB) {
             unorderedVideos.add(unorderedVideos.size(), show.getTitle());
+            videoByIndex.put(show.getTitle(), count++);
             Show newShow = new Show(
                     show.getTitle(),
                     show.getYear(),
@@ -42,76 +45,210 @@ public class VideoDB {
                     show.getNumberSeason(),
                     show.getSeasons()
             );
-            orderedVideos.put(show.getTitle(), newShow);
-            populateGenre(newShow);
+            populateGenreViews(newShow);
+            updateGenreVideoRatings(newShow);
         }
     }
 
-    public void populateGenre(Video video) {
-        String title, genreName;
+    public void populateGenreViews(Video video) {
+        String genreName;
 
-        title = video.getTitle();
         for (int i = 0; i < video.getGenres().size(); ++i) {
             genreName = video.getGenres().get(i);
-            Genre genre =
-                    videoByGenre.get(genreName);
+            GenreViews genre = genreViews.get(genreName);
             if (genre != null) {
-                bestGenres.remove(genre);
-                genre.addVideos(title);
+                genre.addVideos(video.getTitle());
             } else {
-                genre = new Genre(genreName);
-                genre.addVideos(title);
-                videoByGenre.put(genreName, genre);
-            }
-            bestGenres.add(genre);
-        }
-    }
-
-    public void addGenreViews(String title) {
-        Video tmp_video;
-        Genre tmp;
-
-        tmp_video = orderedVideos.get(title);
-
-        List<String> videoGenres = tmp_video.getGenres();
-        for (String videoGenre : videoGenres) {
-            tmp = videoByGenre.get(videoGenre);
-            bestGenres.remove(tmp);
-            tmp.addViews();
-            bestGenres.add(tmp);
-        }
-    }
-
-    public boolean validFilters(Video video, String year, String genre) {
-        if (year != null && genre != null) {
-            return video.getGenres().contains(genre) && video.getYear() == Integer.parseInt(year);
-        } else if (year == null && genre != null) {
-            return video.getGenres().contains(genre);
-        } else if (year != null) {
-            return video.getYear() == Integer.parseInt(year);
-        } else {
-            return true;
-        }
-    }
-
-    public String getUnwatchedVideo(List<String> history) {
-        List<String> differences =
-                unorderedVideos.stream().filter(element -> !history.contains(element)).collect(Collectors.toList());
-
-        if (differences.isEmpty()) {
-            return null;
-        }
-
-        return differences.get(0);
-    }
-
-    public String getPopularVideo(List<String> history) {
-        for (Genre genre : bestGenres) {
-            String video = genre.getUnwatchedVideo(history);
-            if (video != null) {
-                return "PopularRecommendation result: " + video;
+                genre = new GenreViews(video.getTitle());
+                genreViews.put(genreName, genre);
+                mostViewedGenres.add(genre);
             }
         }
-        return "PopularRecommendation result: ";
+    }
+
+    public void updateGenreViews(Video video) {
+        String genreName;
+
+        for (int i = 0; i < video.getGenres().size(); ++i) {
+            genreName = video.getGenres().get(i);
+            GenreViews genre = genreViews.get(genreName);
+            mostViewedGenres.remove(genre);
+            genre.addViews();
+            mostViewedGenres.add(genre);
+        }
+    }
+
+    public void updateGenreVideoRatings(Video video) {
+        String genreName;
+
+        for (int i = 0; i < video.getGenres().size(); ++i) {
+            genreName = video.getGenres().get(i);
+            SortedSet<Video> genre = genreVideoRatings.get(genreName);
+            if (genre != null) {
+                genre.remove(video);
+            } else {
+                genre = new TreeSet<>(new RatingCmp());
+                genreVideoRatings.put(genreName, genre);
+            }
+            genre.add(video);
+        }
+    }
+
+    public String getUnwatchedVideo(Map<String, Integer> history) {
+        for (String unorderedVideo : unorderedVideos) {
+            if (!history.containsKey(unorderedVideo)) {
+                return unorderedVideo;
+            }
+        }
+
+        return null;
+    }
+
+    public String getBestVideo(MovieDB movieDB,
+                               ShowDB showDB, Map<String, Integer> history) {
+        List<Movie> movies = movieDB.getTopRatedMovies();
+        List<Show> shows = showDB.getTopRatedShows();
+        Collections.reverse(movies);
+        Collections.reverse(shows);
+        int first = 0, second = 0;
+        int movies_size = movies.size(), shows_size = shows.size();
+        Movie movie;
+        Show show;
+
+        while(first < movies_size || second < shows_size) {
+            if (first < movies_size && second < shows_size) {
+                movie = movies.get(first);
+                show = shows.get(second);
+                if (movie.getTotalRating() > show.getTotalRating()) {
+                    ++first;
+                    if (!history.containsKey(movie.getTitle())) {
+                        return movie.getTitle();
+                    }
+                } else if (movie.getTotalRating() < show.getTotalRating()) {
+                    ++second;
+                    if (!history.containsKey(show.getTitle())) {
+                        return show.getTitle();
+                    }
+                } else {
+                    if (videoByIndex.get(movie.getTitle()) < videoByIndex.get(show.getTitle())) {
+                        ++first;
+                        if (!history.containsKey(movie.getTitle())) {
+                            return movie.getTitle();
+                        }
+                    } else {
+                        ++second;
+                        if (!history.containsKey(show.getTitle())) {
+                            return show.getTitle();
+                        }
+                    }
+                }
+            } else if (first < movies_size) {
+                movie = movies.get(first);
+                ++first;
+                if (!history.containsKey(movie.getTitle())) {
+                    return movie.getTitle();
+                }
+            } else {
+                show = shows.get(second);
+                ++second;
+                if (!history.containsKey(show.getTitle())) {
+                    return show.getTitle();
+                }
+            }
+        }
+
+        return null;
+    }
+
+    public String getPopularVideo(Map<String, Integer> history) {
+        String message = "PopularRecommendation result: ";
+        String success;
+
+        for (GenreViews genre : mostViewedGenres) {
+            success = genre.getUnwatchedVideo(history);
+            if (success != null) {
+                return message + success;
+            }
+        }
+
+        return message;
+    }
+
+    public String getFavoriteVideo(MovieDB movieDB,
+                                   ShowDB showDB, Map<String, Integer> history) {
+        String message = "FavoriteRecommendation result: ";
+        List<Movie> movies = movieDB.getTopFavMovies();
+        List<Show> shows = showDB.getTopFavShows();
+        int first = 0, second = 0;
+        int movies_size = movies.size(), shows_size = shows.size();
+        Movie movie;
+        Show show;
+
+        while(first < movies_size || second < shows_size) {
+            if (first < movies_size && second < shows_size) {
+                movie = movies.get(first);
+                show = shows.get(second);
+                if (movie.getFavorites() > show.getFavorites()) {
+                    ++first;
+                    if (!history.containsKey(movie.getTitle())) {
+                        return message + movie.getTitle();
+                    }
+                } else if (movie.getFavorites() < show.getFavorites()) {
+                    ++second;
+                    if (!history.containsKey(show.getTitle())) {
+                        return message + show.getTitle();
+                    }
+                } else {
+                    if (videoByIndex.get(movie.getTitle()) < videoByIndex.get(show.getTitle())) {
+                        ++first;
+                        if (!history.containsKey(movie.getTitle())) {
+                            return message + movie.getTitle();
+                        }
+                    } else {
+                        ++second;
+                        if (!history.containsKey(show.getTitle())) {
+                            return message + show.getTitle();
+                        }
+                    }
+                }
+            } else if (first < movies_size) {
+                movie = movies.get(first);
+                ++first;
+                if (!history.containsKey(movie.getTitle())) {
+                    return message + movie.getTitle();
+                }
+            } else {
+                show = shows.get(second);
+                ++second;
+                if (!history.containsKey(show.getTitle())) {
+                    return message + show.getTitle();
+                }
+            }
+        }
+
+        return "FavoriteRecommendation cannot be applied!";
+   }
+
+    public String getSearchedVideo(String genre, Map<String, Integer> history) {
+        List<String> solution = new ArrayList<>();
+        String message = "SearchRecommendation result: ";
+
+        SortedSet<Video> videos = genreVideoRatings.get(genre);
+
+        if (videos == null) {
+            return "SearchRecommendation cannot be applied!";
+        }
+
+        for (Video video : videos) {
+            if (!history.containsKey(video.getTitle())) {
+                solution.add(video.getTitle());
+            }
+        }
+
+        if (solution.isEmpty()) {
+            return "SearchRecommendation cannot be applied!";
+        }
+
+        return message + solution.toString();
     }
 }

@@ -1,5 +1,12 @@
 package user;
 
+import database.ActorDB;
+import database.MovieDB;
+import database.ShowDB;
+import database.VideoDB;
+import video.Movie;
+import video.Show;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -8,7 +15,7 @@ public class User implements Comparable<User> {
     private final String username;
     private final String subscriptionType;
     private final Map<String, Integer> history;
-    private final ArrayList<String> favoriteMovies;
+    private final ArrayList<String> favoriteVideos;
 
     private final HashMap<String, Double> rated = new HashMap<>();
 
@@ -17,15 +24,15 @@ public class User implements Comparable<User> {
                 final ArrayList<String> favoriteMovies) {
         this.username = username;
         this.subscriptionType = subscriptionType;
-        this.favoriteMovies = favoriteMovies;
+        this.favoriteVideos = favoriteMovies;
         this.history = history;
     }
 
-    public String addFavorite(String title) {
+    public String addFavorite(MovieDB movieDB, ShowDB showDB, String title) {
         String message;
 
         // Video is already in favorites -> return error
-        if (favoriteMovies.contains(title)) {
+        if (favoriteVideos.contains(title)) {
             message = "error -> " + title + " is already in favourite list";
             return message;
         }
@@ -38,10 +45,17 @@ public class User implements Comparable<User> {
 
         // Add video in favorites -> return success
         message = "success -> " + title + " was added as favourite";
+        favoriteVideos.add(title);
+        if (movieDB.isMovie(title)) {
+            movieDB.addFavorites(title);
+        } else {
+            showDB.addFavorites(title);
+        }
         return message;
     }
 
-    public String addViews(String title) {
+    public String addViews(VideoDB videoDB, MovieDB movieDB, ShowDB showDB,
+                           String title) {
         String message;
 
         // Video was watched already -> increment views & return success
@@ -54,11 +68,19 @@ public class User implements Comparable<User> {
 
         // Video wasn't watched already -> add to history & return success
         history.put(title, 1);
+        if (movieDB.isMovie(title)) {
+            movieDB.addViews(videoDB, title);
+        } else {
+            showDB.addViews(videoDB, title);
+        }
         message = "success -> " + title + " was viewed with total views of " + 1;
         return message;
     }
 
-    public String addRatingMovie(String title, double rating) {
+    public String addRatingMovie(ActorDB actorDB, VideoDB videoDB,
+                                 MovieDB movieDB,
+                                 String title,
+                                 double rating) {
         String message;
 
         // Video wasn't watched -> return error
@@ -75,12 +97,18 @@ public class User implements Comparable<User> {
 
         // Video wasn't rated -> add rating & return success
         rated.put(title, rating);
+        movieDB.addRating(videoDB, title, rating);
+        actorDB.addRating(movieDB.getMovieActors(title), title,
+                movieDB.getMovieRating(title));
         message =
                 "success -> " + title + " was rated with " + rating + " by " + username;
         return message;
     }
 
-    public String addRatingShow(String title, int season, double rating) {
+    public String addRatingShow(ActorDB actorDB, VideoDB videoDB, ShowDB showDB,
+                                String title,
+                                int season,
+                                double rating) {
         String message;
 
         // Video wasn't watched -> return error
@@ -90,7 +118,7 @@ public class User implements Comparable<User> {
         }
 
         // Video has been already rated -> return error
-        if (rated.containsKey(title)) {
+        if (rated.containsKey(title + "season" + season)) {
             message = "error -> " + title + " has been already rated";
             return message;
         }
@@ -101,6 +129,9 @@ public class User implements Comparable<User> {
          * separate entries for different seasons.
          */
         rated.put(title + "season" + season, rating);
+        showDB.addRating(videoDB, title, season, rating);
+        actorDB.addRating(showDB.getShowActors(title), title,
+                showDB.getShowRating(title));
         message =
                 "success -> " + title + " was rated with " + rating + " by " + username;
         return message;
@@ -124,5 +155,9 @@ public class User implements Comparable<User> {
         int result = Integer.compare(this.rated.size(), other.rated.size());
         if (result != 0) return result;
         return this.username.compareTo(other.username);
+    }
+
+    public boolean isActive() {
+        return rated.size() != 0;
     }
 }

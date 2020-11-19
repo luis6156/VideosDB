@@ -17,12 +17,9 @@ public class ActorDB {
     SortedSet<Actor> ascendingActors = new TreeSet<>(new ActorAscCmp());
     SortedSet<Actor> descendingActors = new TreeSet<>(new ActorDescCmp());
 
-    public void populateActorDB(List<ActorInputData> actorDB, MovieDB movieDB,
-                                ShowDB showDB) {
+    public void populateActorDB(List<ActorInputData> actorDB) {
         for (ActorInputData actor : actorDB) {
             Actor newActor = new Actor(
-                    movieDB,
-                    showDB,
                     actor.getName(),
                     actor.getCareerDescription(),
                     actor.getFilmography(),
@@ -35,12 +32,12 @@ public class ActorDB {
         }
     }
 
-    public void addRating(List<String> names, MovieDB movieDB, ShowDB showDB) {
+    public void addRating(List<String> names, String title, double rating) {
         for (String name : names) {
             Actor tmp = actorDB.get(name);
             if (tmp != null) {
                 ratedActors.remove(tmp);
-                tmp.setActorRating(movieDB, showDB);
+                tmp.addActorRating(title, rating);
                 ratedActors.add(tmp);
             }
         }

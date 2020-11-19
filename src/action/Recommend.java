@@ -7,12 +7,8 @@ import database.VideoDB;
 import fileio.ActionInputData;
 import fileio.Writer;
 import org.json.simple.JSONArray;
-import user.BestRec;
-import user.StandardRec;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.Map;
 
 public class Recommend {
     public static void chooseRec(VideoDB videoDB, MovieDB movieDB,
@@ -24,11 +20,11 @@ public class Recommend {
         switch (action.getType()) {
             case "standard":
                 message =
-                        "StandardRecommendation result: " + StandardRec.standard(videoDB, userDB, username);
+                        "StandardRecommendation result: " + videoDB.getUnwatchedVideo(userDB.getHistory(username));
                 break;
             case "best_unseen":
                 message =
-                        "BestRatedUnseenRecommendation result: " + BestRec.best(movieDB, showDB, userDB, username);
+                        "BestRatedUnseenRecommendation result: " + videoDB.getBestVideo(movieDB, showDB, userDB.getHistory(username));
                 break;
             case "popular":
                 if (userDB.checkUserSub(username)) {
@@ -37,6 +33,25 @@ public class Recommend {
                 } else {
                     message = "PopularRecommendation cannot be applied!";
                 }
+                break;
+            case "favorite":
+                if (userDB.checkUserSub(username)) {
+                    message =
+                            videoDB.getFavoriteVideo(movieDB, showDB,
+                                    userDB.getHistory(username));
+                } else {
+                    message = "FavoriteRecommendation cannot be applied!";
+                }
+                break;
+            case "search":
+                if (userDB.checkUserSub(username)) {
+                    message =
+                            videoDB.getSearchedVideo(action.getGenre(),
+                                    userDB.getHistory(username));
+                } else {
+                    message = "SearchRecommendation cannot be applied!";
+                }
+                break;
             default:
                 break;
         }
