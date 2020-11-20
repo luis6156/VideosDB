@@ -10,6 +10,6 @@ public class FavoriteCmp implements Comparator<Video> {
     public int compare(Video self, Video other) {
         int result = Integer.compare(self.getFavorites(), other.getFavorites());
         if (result != 0) return -result;
-        return self.getTitle().compareTo(other.getTitle());
+        return -self.getTitle().compareTo(other.getTitle());
     }
 }

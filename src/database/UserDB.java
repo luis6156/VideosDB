@@ -1,15 +1,17 @@
 package database;
 
+import comparator.UserActivityCmp;
 import fileio.UserInputData;
 import user.User;
-import video.Movie;
-import video.Show;
 
 import java.util.*;
 
 public class UserDB {
     private final HashMap<String, User> userDB = new HashMap<>();
-    private final SortedSet<User> activeUsers = new TreeSet<>();
+    private final SortedSet<User> activeUsersAsc =
+            new TreeSet<>(new UserActivityCmp(true));
+    private final SortedSet<User> activeUsersDesc =
+            new TreeSet<>(new UserActivityCmp(false));
 
     public void populateUserDB(List<UserInputData> users, MovieDB movieDB,
                                ShowDB showDB, VideoDB videoDB) {
@@ -71,10 +73,12 @@ public class UserDB {
                                  String title,
                                   double rating) {
         User tmp = userDB.get(username);
-        activeUsers.remove(tmp);
+        activeUsersAsc.remove(tmp);
+        activeUsersDesc.remove(tmp);
         String message = tmp.addRatingMovie(actorDB, videoDB, movieDB, title,
                 rating);
-        activeUsers.add(tmp);
+        activeUsersDesc.add(tmp);
+        activeUsersAsc.add(tmp);
 
         return message;
     }
@@ -85,11 +89,13 @@ public class UserDB {
                                 int season,
                                 double rating) {
         User tmp = userDB.get(username);
-        activeUsers.remove(tmp);
+        activeUsersAsc.remove(tmp);
+        activeUsersDesc.remove(tmp);
         String message = tmp.addRatingShow(actorDB, videoDB, showDB, title,
                 season,
                 rating);
-        activeUsers.add(tmp);
+        activeUsersDesc.add(tmp);
+        activeUsersAsc.add(tmp);
 
         return message;
     }
@@ -98,14 +104,25 @@ public class UserDB {
         return userDB.get(username).isPremium();
     }
 
-    public String getTopK(int k) {
+    public String getTopK(String orderType, int k) {
         List<String> list = new ArrayList<>();
-        for (User user : activeUsers) {
-            if (user.isActive()) {
-                list.add(user.getUsername());
+        if (orderType.equals("desc")) {
+            for (User user : activeUsersDesc) {
+                if (user.isActive()) {
+                    list.add(user.getUsername());
+                }
+                if (list.size() == k) {
+                    break;
+                }
             }
-            if (list.size() == k) {
-                break;
+        } else {
+            for (User user : activeUsersAsc) {
+                if (user.isActive()) {
+                    list.add(user.getUsername());
+                }
+                if (list.size() == k) {
+                    break;
+                }
             }
         }
 

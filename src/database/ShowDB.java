@@ -13,7 +13,10 @@ import java.util.*;
 public class ShowDB {
     private final HashMap<String, Show> showDB = new HashMap<>();
     private final SortedSet<Show> favShows = new TreeSet<>(new FavoriteCmp());
-    private final SortedSet<Show> viewedShows = new TreeSet<>(new ViewCmp());
+    private final SortedSet<Show> viewedShowsAsc =
+            new TreeSet<>(new ViewCmp(true));
+    private final SortedSet<Show> viewedShowsDesc =
+            new TreeSet<>(new ViewCmp(false));
     private final SortedSet<Show> longestShows =
             new TreeSet<>(new DurationCmp());
     private final SortedSet<Show> ratedShows = new TreeSet<>(new RatingCmp());
@@ -55,9 +58,11 @@ public class ShowDB {
 
     public void addViews(VideoDB videoDB, String title) {
         Show tmp = showDB.get(title);
-        viewedShows.remove(tmp);
+        viewedShowsAsc.remove(tmp);
+        viewedShowsDesc.remove(tmp);
         tmp.addViews();
-        viewedShows.add(tmp);
+        viewedShowsAsc.add(tmp);
+        viewedShowsDesc.add(tmp);
         videoDB.updateGenreViews(tmp);
     }
 
@@ -82,7 +87,8 @@ public class ShowDB {
         }
     }
 
-    public List<String> getTopK(String query, String year, String genre,
+    public List<String> getTopK(String query, String orderType, String year,
+                                String genre,
                                 int k) {
         List<String> list = new ArrayList<>();
         switch (query) {
@@ -107,12 +113,23 @@ public class ShowDB {
                 }
                 break;
             case "most_viewed":
-                for (Show show : viewedShows) {
-                    if (validFilters(show, year, genre)) {
-                        list.add(show.getTitle());
+                if (orderType.equals("desc")) {
+                    for (Show show : viewedShowsDesc) {
+                        if (validFilters(show, year, genre)) {
+                            list.add(show.getTitle());
+                        }
+                        if (list.size() == k) {
+                            break;
+                        }
                     }
-                    if (list.size() == k) {
-                        break;
+                } else {
+                    for (Show show : viewedShowsAsc) {
+                        if (validFilters(show, year, genre)) {
+                            list.add(show.getTitle());
+                        }
+                        if (list.size() == k) {
+                            break;
+                        }
                     }
                 }
                 break;

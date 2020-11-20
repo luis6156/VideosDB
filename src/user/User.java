@@ -4,14 +4,12 @@ import database.ActorDB;
 import database.MovieDB;
 import database.ShowDB;
 import database.VideoDB;
-import video.Movie;
-import video.Show;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class User implements Comparable<User> {
+public class User {
     private final String username;
     private final String subscriptionType;
     private final Map<String, Integer> history;
@@ -62,6 +60,11 @@ public class User implements Comparable<User> {
         if (history.containsKey(title)) {
             int views = history.get(title);
             history.put(title, ++views);
+            if (movieDB.isMovie(title)) {
+                movieDB.addViews(videoDB, title);
+            } else {
+                showDB.addViews(videoDB, title);
+            }
             message = "success -> " + title + " was viewed with total views of " + views;
             return message;
         }
@@ -149,12 +152,8 @@ public class User implements Comparable<User> {
         return !subscriptionType.equals("BASIC");
     }
 
-    // Ascending order
-    @Override
-    public int compareTo(User other) {
-        int result = Integer.compare(this.rated.size(), other.rated.size());
-        if (result != 0) return result;
-        return this.username.compareTo(other.username);
+    public int getActivity() {
+        return rated.size();
     }
 
     public boolean isActive() {

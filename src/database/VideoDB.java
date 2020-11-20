@@ -97,15 +97,16 @@ public class VideoDB {
     public String getUnwatchedVideo(Map<String, Integer> history) {
         for (String unorderedVideo : unorderedVideos) {
             if (!history.containsKey(unorderedVideo)) {
-                return unorderedVideo;
+                return "StandardRecommendation result: " + unorderedVideo;
             }
         }
 
-        return null;
+        return "StandardRecommendation cannot be applied!";
     }
 
     public String getBestVideo(MovieDB movieDB,
                                ShowDB showDB, Map<String, Integer> history) {
+        String message = "BestRatedUnseenRecommendation result: ";
         List<Movie> movies = movieDB.getTopRatedMovies();
         List<Show> shows = showDB.getTopRatedShows();
         Collections.reverse(movies);
@@ -122,23 +123,23 @@ public class VideoDB {
                 if (movie.getTotalRating() > show.getTotalRating()) {
                     ++first;
                     if (!history.containsKey(movie.getTitle())) {
-                        return movie.getTitle();
+                        return message + movie.getTitle();
                     }
                 } else if (movie.getTotalRating() < show.getTotalRating()) {
                     ++second;
                     if (!history.containsKey(show.getTitle())) {
-                        return show.getTitle();
+                        return message + show.getTitle();
                     }
                 } else {
                     if (videoByIndex.get(movie.getTitle()) < videoByIndex.get(show.getTitle())) {
                         ++first;
                         if (!history.containsKey(movie.getTitle())) {
-                            return movie.getTitle();
+                            return message + movie.getTitle();
                         }
                     } else {
                         ++second;
                         if (!history.containsKey(show.getTitle())) {
-                            return show.getTitle();
+                            return message + show.getTitle();
                         }
                     }
                 }
@@ -146,32 +147,31 @@ public class VideoDB {
                 movie = movies.get(first);
                 ++first;
                 if (!history.containsKey(movie.getTitle())) {
-                    return movie.getTitle();
+                    return message + movie.getTitle();
                 }
             } else {
                 show = shows.get(second);
                 ++second;
                 if (!history.containsKey(show.getTitle())) {
-                    return show.getTitle();
+                    return message + show.getTitle();
                 }
             }
         }
 
-        return null;
+        return "BestRatedUnseenRecommendation cannot be applied!";
     }
 
     public String getPopularVideo(Map<String, Integer> history) {
-        String message = "PopularRecommendation result: ";
         String success;
 
         for (GenreViews genre : mostViewedGenres) {
             success = genre.getUnwatchedVideo(history);
             if (success != null) {
-                return message + success;
+                return "PopularRecommendation result: " + success;
             }
         }
 
-        return message;
+        return "PopularRecommendation cannot be applied!";
     }
 
     public String getFavoriteVideo(MovieDB movieDB,

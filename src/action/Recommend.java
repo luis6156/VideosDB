@@ -20,11 +20,11 @@ public class Recommend {
         switch (action.getType()) {
             case "standard":
                 message =
-                        "StandardRecommendation result: " + videoDB.getUnwatchedVideo(userDB.getHistory(username));
+                         videoDB.getUnwatchedVideo(userDB.getHistory(username));
                 break;
             case "best_unseen":
                 message =
-                        "BestRatedUnseenRecommendation result: " + videoDB.getBestVideo(movieDB, showDB, userDB.getHistory(username));
+                         videoDB.getBestVideo(movieDB, showDB, userDB.getHistory(username));
                 break;
             case "popular":
                 if (userDB.checkUserSub(username)) {

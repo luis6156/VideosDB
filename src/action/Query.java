@@ -19,15 +19,18 @@ public class Query {
         String message = switch (action.getObjectType()) {
             case "movies" -> movieDB.getTopK(
                     action.getCriteria(),
+                    action.getSortType(),
                     action.getFilters().get(0).get(0),
                     action.getFilters().get(1).get(0),
                     action.getNumber()).toString();
             case "shows" -> showDB.getTopK(
                     action.getCriteria(),
+                    action.getSortType(),
                     action.getFilters().get(0).get(0),
                     action.getFilters().get(1).get(0),
                     action.getNumber()).toString();
-            case "users" -> userDB.getTopK(action.getNumber());
+            case "users" -> userDB.getTopK(action.getSortType(),
+                    action.getNumber());
             case "actors" -> actorDB.getTopK(
                     action.getCriteria(),
                     action.getSortType(),
