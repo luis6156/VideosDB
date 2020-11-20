@@ -80,16 +80,14 @@ public final class Main {
         MovieDB movieDB = new MovieDB();
         ShowDB showDB = new ShowDB();
         ActorDB actorDB = new ActorDB();
-        videoDB.populateVideoDB(input.getMovies(), input.getSerials());
-        movieDB.populateMovieDB(input.getMovies());
-        showDB.populateVideoDB(input.getSerials());
+        movieDB.populateMovieDB(videoDB, input.getMovies());
+        showDB.populateShowDB(videoDB, input.getSerials());
         userDB.populateUserDB(input.getUsers(), movieDB, showDB, videoDB);
         actorDB.populateActorDB(input.getActors());
         Action.chooseAction(videoDB, actorDB, movieDB, showDB, userDB,
                 input.getCommands(),
                 fileWriter,
                 arrayResult);
-
         fileWriter.closeJSON(arrayResult);
     }
 }

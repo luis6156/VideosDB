@@ -26,7 +26,8 @@ public class User {
         this.history = history;
     }
 
-    public String addFavorite(MovieDB movieDB, ShowDB showDB, String title) {
+    public String addFavorite(VideoDB videoDB, MovieDB movieDB, ShowDB showDB,
+                              String title) {
         String message;
 
         // Video is already in favorites -> return error
@@ -45,9 +46,9 @@ public class User {
         message = "success -> " + title + " was added as favourite";
         favoriteVideos.add(title);
         if (movieDB.isMovie(title)) {
-            movieDB.addFavorites(title);
+            movieDB.addFavorites(videoDB, title);
         } else {
-            showDB.addFavorites(title);
+            showDB.addFavorites(videoDB, title);
         }
         return message;
     }

@@ -15,9 +15,6 @@ public class Action {
                                     UserDB userDB,
                                     List<ActionInputData> actions, Writer fileWriter, JSONArray array) throws IOException {
         for (ActionInputData action : actions) {
-            if (action.getActionId() == 55) {
-                System.out.println("da");
-            }
             switch (action.getActionType()) {
                 case "command":
                     Command.chooseCommand(actorDB, videoDB, movieDB, showDB,

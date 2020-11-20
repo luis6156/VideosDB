@@ -5,7 +5,7 @@ import video.Video;
 import java.util.Comparator;
 
 public class ViewCmp implements Comparator<Video> {
-    private boolean isAscending;
+    private final boolean isAscending;
 
     public ViewCmp(boolean isAscending) {
         this.isAscending = isAscending;

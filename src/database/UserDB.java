@@ -27,9 +27,9 @@ public class UserDB {
             for (int i = 0; i < user.getFavoriteMovies().size(); ++i) {
                 title = user.getFavoriteMovies().get(i);
                 if (movieDB.isMovie(title)) {
-                    movieDB.addFavorites(title);
+                    movieDB.addFavorites(videoDB, title);
                 } else if (showDB.isShow(title)) {
-                    showDB.addFavorites(title);
+                    showDB.addFavorites(videoDB, title);
                 }
             }
             for (Map.Entry<String, Integer> entry : user.getHistory().entrySet()) {
@@ -56,9 +56,11 @@ public class UserDB {
         return new HashMap<>(history);
     }
 
-    public String addFavorites(MovieDB movieDB, ShowDB showDB, String username,
+    public String addFavorites(VideoDB videoDB, MovieDB movieDB, ShowDB showDB,
+                               String username,
                                String title) {
-        return userDB.get(username).addFavorite(movieDB, showDB, title);
+        return userDB.get(username).addFavorite(videoDB, movieDB, showDB,
+                title);
     }
 
     public String addViews(VideoDB videoDB, MovieDB movieDB, ShowDB showDB,
