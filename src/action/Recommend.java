@@ -24,8 +24,6 @@ public class Recommend {
                 break;
             case "best_unseen":
                 message = videoDB.getBestVideo(userDB.getHistory(username));
-                         //videoDB.getBestVideo(movieDB, showDB,
-                    //userDB.getHistory(username));
                 break;
             case "popular":
                 if (userDB.checkUserSub(username)) {
@@ -39,8 +37,6 @@ public class Recommend {
                 if (userDB.checkUserSub(username)) {
                     message =
                             videoDB.getFavoriteVideo(userDB.getHistory(username));
-                            //videoDB.getFavoriteVideo(movieDB, showDB,
-                            //        userDB.getHistory(username));
                 } else {
                     message = "FavoriteRecommendation cannot be applied!";
                 }

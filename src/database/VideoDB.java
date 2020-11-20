@@ -120,61 +120,6 @@ public class VideoDB {
         return "BestRatedUnseenRecommendation cannot be applied!";
     }
 
-    public String getBestVideo2(MovieDB movieDB,
-                               ShowDB showDB, Map<String, Integer> history) {
-        String message = "BestRatedUnseenRecommendation result: ";
-        List<Movie> movies = movieDB.getTopRatedMovies();
-        List<Show> shows = showDB.getTopRatedShows();
-        int first = 0, second = 0;
-        int movies_size = movies.size(), shows_size = shows.size();
-        Movie movie;
-        Show show;
-
-        while(first < movies_size || second < shows_size) {
-            if (first < movies_size && second < shows_size) {
-                movie = movies.get(first);
-                show = shows.get(second);
-                if (movie.getTotalRating() > show.getTotalRating()) {
-                    ++first;
-                    if (!history.containsKey(movie.getTitle())) {
-                        return message + movie.getTitle();
-                    }
-                } else if (movie.getTotalRating() < show.getTotalRating()) {
-                    ++second;
-                    if (!history.containsKey(show.getTitle())) {
-                        return message + show.getTitle();
-                    }
-                } else {
-                    if (videoByIndex.get(movie.getTitle()) < videoByIndex.get(show.getTitle())) {
-                        ++first;
-                        if (!history.containsKey(movie.getTitle())) {
-                            return message + movie.getTitle();
-                        }
-                    } else {
-                        ++second;
-                        if (!history.containsKey(show.getTitle())) {
-                            return message + show.getTitle();
-                        }
-                    }
-                }
-            } else if (first < movies_size) {
-                movie = movies.get(first);
-                ++first;
-                if (!history.containsKey(movie.getTitle())) {
-                    return message + movie.getTitle();
-                }
-            } else {
-                show = shows.get(second);
-                ++second;
-                if (!history.containsKey(show.getTitle())) {
-                    return message + show.getTitle();
-                }
-            }
-        }
-
-        return "BestRatedUnseenRecommendation cannot be applied!";
-    }
-
     public String getPopularVideo(Map<String, Integer> history) {
         String success;
 
@@ -197,61 +142,6 @@ public class VideoDB {
 
         return "FavoriteRecommendation cannot be applied!";
     }
-
-    public String getFavoriteVideo2(MovieDB movieDB,
-                                   ShowDB showDB, Map<String, Integer> history) {
-        String message = "FavoriteRecommendation result: ";
-        List<Movie> movies = movieDB.getTopFavMovies();
-        List<Show> shows = showDB.getTopFavShows();
-        int first = 0, second = 0;
-        int movies_size = movies.size(), shows_size = shows.size();
-        Movie movie;
-        Show show;
-
-        while(first < movies_size || second < shows_size) {
-            if (first < movies_size && second < shows_size) {
-                movie = movies.get(first);
-                show = shows.get(second);
-                if (movie.getFavorites() > show.getFavorites()) {
-                    ++first;
-                    if (!history.containsKey(movie.getTitle())) {
-                        return message + movie.getTitle();
-                    }
-                } else if (movie.getFavorites() < show.getFavorites()) {
-                    ++second;
-                    if (!history.containsKey(show.getTitle())) {
-                        return message + show.getTitle();
-                    }
-                } else {
-                    if (videoByIndex.get(movie.getTitle()) < videoByIndex.get(show.getTitle())) {
-                        ++first;
-                        if (!history.containsKey(movie.getTitle())) {
-                            return message + movie.getTitle();
-                        }
-                    } else {
-                        ++second;
-                        if (!history.containsKey(show.getTitle())) {
-                            return message + show.getTitle();
-                        }
-                    }
-                }
-            } else if (first < movies_size) {
-                movie = movies.get(first);
-                ++first;
-                if (!history.containsKey(movie.getTitle())) {
-                    return message + movie.getTitle();
-                }
-            } else {
-                show = shows.get(second);
-                ++second;
-                if (!history.containsKey(show.getTitle())) {
-                    return message + show.getTitle();
-                }
-            }
-        }
-
-        return "FavoriteRecommendation cannot be applied!";
-   }
 
     public String getSearchedVideo(String genre, Map<String, Integer> history) {
         List<String> solution = new ArrayList<>();
