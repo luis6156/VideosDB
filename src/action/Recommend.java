@@ -20,11 +20,12 @@ public class Recommend {
         switch (action.getType()) {
             case "standard":
                 message =
-                        "StandardRecommendation result: " + videoDB.getUnwatchedVideo(userDB.getHistory(username));
+                         videoDB.getUnwatchedVideo(userDB.getHistory(username));
                 break;
             case "best_unseen":
-                message =
-                        "BestRatedUnseenRecommendation result: " + videoDB.getBestVideo(movieDB, showDB, userDB.getHistory(username));
+                message = videoDB.getBestVideo(userDB.getHistory(username));
+                         //videoDB.getBestVideo(movieDB, showDB,
+                    //userDB.getHistory(username));
                 break;
             case "popular":
                 if (userDB.checkUserSub(username)) {
@@ -37,8 +38,9 @@ public class Recommend {
             case "favorite":
                 if (userDB.checkUserSub(username)) {
                     message =
-                            videoDB.getFavoriteVideo(movieDB, showDB,
-                                    userDB.getHistory(username));
+                            videoDB.getFavoriteVideo(userDB.getHistory(username));
+                            //videoDB.getFavoriteVideo(movieDB, showDB,
+                            //        userDB.getHistory(username));
                 } else {
                     message = "FavoriteRecommendation cannot be applied!";
                 }

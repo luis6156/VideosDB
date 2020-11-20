@@ -12,13 +12,24 @@ import java.util.*;
 
 public class ShowDB {
     private final HashMap<String, Show> showDB = new HashMap<>();
-    private final SortedSet<Show> favShows = new TreeSet<>(new FavoriteCmp());
-    private final SortedSet<Show> viewedShows = new TreeSet<>(new ViewCmp());
-    private final SortedSet<Show> longestShows =
-            new TreeSet<>(new DurationCmp());
-    private final SortedSet<Show> ratedShows = new TreeSet<>(new RatingCmp());
+    private final SortedSet<Show> favShowsDesc =
+            new TreeSet<>(new FavoriteCmp(false));
+    private final SortedSet<Show> favShowsAsc =
+            new TreeSet<>(new FavoriteCmp(true));
+    private final SortedSet<Show> viewedShowsAsc =
+            new TreeSet<>(new ViewCmp(true));
+    private final SortedSet<Show> viewedShowsDesc =
+            new TreeSet<>(new ViewCmp(false));
+    private final SortedSet<Show> longestShowsAsc =
+            new TreeSet<>(new DurationCmp(true));
+    private final SortedSet<Show> longestShowsDesc =
+            new TreeSet<>(new DurationCmp(false));
+    private final SortedSet<Show> ratedShowsAsc =
+            new TreeSet<>(new RatingCmp(true));
+    private final SortedSet<Show> ratedShowsDesc =
+            new TreeSet<>(new RatingCmp(false));
 
-    public void populateVideoDB(List<SerialInputData> showDB) {
+    public void populateShowDB(VideoDB videoDB, List<SerialInputData> showDB) {
         for (SerialInputData show : showDB) {
             Show newShow = new Show(
                     show.getTitle(),
@@ -29,8 +40,11 @@ public class ShowDB {
                     show.getSeasons()
             );
             this.showDB.put(show.getTitle(), newShow);
-            longestShows.add(newShow);
-            ratedShows.add(newShow);
+            longestShowsAsc.add(newShow);
+            longestShowsDesc.add(newShow);
+            ratedShowsAsc.add(newShow);
+            ratedShowsDesc.add(newShow);
+            videoDB.populateVideoDB(newShow);
         }
     }
 
@@ -46,28 +60,37 @@ public class ShowDB {
         return showDB.get(title).getActors();
     }
 
-    public void addFavorites(String title) {
+    public void addFavorites(VideoDB videoDB, String title) {
         Show tmp = showDB.get(title);
-        favShows.remove(tmp);
+        favShowsDesc.remove(tmp);
+        favShowsAsc.remove(tmp);
         tmp.addFavorite();
-        favShows.add(tmp);
+        favShowsDesc.add(tmp);
+        favShowsAsc.add(tmp);
+        videoDB.updateVideoFav(tmp);
     }
 
     public void addViews(VideoDB videoDB, String title) {
         Show tmp = showDB.get(title);
-        viewedShows.remove(tmp);
+        viewedShowsAsc.remove(tmp);
+        viewedShowsDesc.remove(tmp);
         tmp.addViews();
-        viewedShows.add(tmp);
+        viewedShowsAsc.add(tmp);
+        viewedShowsDesc.add(tmp);
         videoDB.updateGenreViews(tmp);
     }
 
     public void addRating(VideoDB videoDB, String title, int season,
                           double rating) {
         Show tmp = showDB.get(title);
-        ratedShows.remove(tmp);
+        ratedShowsDesc.remove(tmp);
+        ratedShowsAsc.remove(tmp);
+        videoDB.removeGenreVideoRatings(tmp);
         tmp.addRating(season, rating);
-        ratedShows.add(tmp);
+        ratedShowsAsc.add(tmp);
+        ratedShowsDesc.add(tmp);
         videoDB.updateGenreVideoRatings(tmp);
+        videoDB.updateVideoRatings(tmp);
     }
 
     public boolean validFilters(Video video, String year, String genre) {
@@ -82,22 +105,34 @@ public class ShowDB {
         }
     }
 
-    public List<String> getTopK(String query, String year, String genre,
+    public List<String> getTopK(String query, String orderType, String year,
+                                String genre,
                                 int k) {
         List<String> list = new ArrayList<>();
         switch (query) {
             case "favorite":
-                for (Show show : favShows) {
-                    if (validFilters(show, year, genre)) {
-                        list.add(show.getTitle());
+                if (orderType.equals("desc")) {
+                    for (Show show : favShowsDesc) {
+                        if (validFilters(show, year, genre)) {
+                            list.add(show.getTitle());
+                        }
+                        if (list.size() == k) {
+                            break;
+                        }
                     }
-                    if (list.size() == k) {
-                        break;
+                } else {
+                    for (Show show : favShowsAsc) {
+                        if (validFilters(show, year, genre)) {
+                            list.add(show.getTitle());
+                        }
+                        if (list.size() == k) {
+                            break;
+                        }
                     }
                 }
                 break;
             case "ratings":
-                for (Show show : ratedShows) {
+                for (Show show : ratedShowsAsc) {
                     if (validFilters(show, year, genre) && show.getTotalRating() != 0) {
                         list.add(show.getTitle());
                     }
@@ -107,22 +142,44 @@ public class ShowDB {
                 }
                 break;
             case "most_viewed":
-                for (Show show : viewedShows) {
-                    if (validFilters(show, year, genre)) {
-                        list.add(show.getTitle());
+                if (orderType.equals("desc")) {
+                    for (Show show : viewedShowsDesc) {
+                        if (validFilters(show, year, genre)) {
+                            list.add(show.getTitle());
+                        }
+                        if (list.size() == k) {
+                            break;
+                        }
                     }
-                    if (list.size() == k) {
-                        break;
+                } else {
+                    for (Show show : viewedShowsAsc) {
+                        if (validFilters(show, year, genre)) {
+                            list.add(show.getTitle());
+                        }
+                        if (list.size() == k) {
+                            break;
+                        }
                     }
                 }
                 break;
             case "longest":
-                for (Show show : longestShows) {
-                    if (validFilters(show, year, genre)) {
-                        list.add(show.getTitle());
+                if (orderType.equals("desc")) {
+                    for (Show show : longestShowsDesc) {
+                        if (validFilters(show, year, genre)) {
+                            list.add(show.getTitle());
+                        }
+                        if (list.size() == k) {
+                            break;
+                        }
                     }
-                    if (list.size() == k) {
-                        break;
+                } else {
+                    for (Show show : longestShowsAsc) {
+                        if (validFilters(show, year, genre)) {
+                            list.add(show.getTitle());
+                        }
+                        if (list.size() == k) {
+                            break;
+                        }
                     }
                 }
                 break;
@@ -134,10 +191,10 @@ public class ShowDB {
     }
 
     public List<Show> getTopRatedShows() {
-        return new ArrayList<>(ratedShows);
+        return new ArrayList<>(ratedShowsDesc);
     }
 
     public List<Show> getTopFavShows() {
-        return new ArrayList<>(favShows);
+        return new ArrayList<>(favShowsDesc);
     }
 }

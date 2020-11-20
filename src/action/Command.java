@@ -17,7 +17,7 @@ public class Command {
         String message = null;
         switch (action.getType()) {
             case "favorite":
-                message = userDB.addFavorites(movieDB, showDB,
+                message = userDB.addFavorites(videoDB, movieDB, showDB,
                         action.getUsername(),
                         title);
                 break;

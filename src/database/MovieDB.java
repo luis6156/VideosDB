@@ -12,15 +12,24 @@ import java.util.*;
 
 public class MovieDB {
     private final HashMap<String, Movie> movieDB = new HashMap<>();
-    private final HashMap<String, SortedSet<Video>> genreRatingDB =
-            new HashMap<>();
-    private final SortedSet<Movie> favMovies = new TreeSet<>(new FavoriteCmp());
-    private final SortedSet<Movie> viewedMovies = new TreeSet<>(new ViewCmp());
-    private final SortedSet<Movie> longestMovies =
-            new TreeSet<>(new DurationCmp());
-    private final SortedSet<Movie> ratedMovies = new TreeSet<>(new RatingCmp());
+    private final SortedSet<Movie> favMoviesDesc =
+            new TreeSet<>(new FavoriteCmp(false));
+    private final SortedSet<Movie> favMoviesAsc =
+            new TreeSet<>(new FavoriteCmp(true));
+    private final SortedSet<Movie> viewedMoviesAsc =
+            new TreeSet<>(new ViewCmp(true));
+    private final SortedSet<Movie> viewedMoviesDesc =
+            new TreeSet<>(new ViewCmp(false));
+    private final SortedSet<Movie> longestMoviesAsc =
+            new TreeSet<>(new DurationCmp(true));
+    private final SortedSet<Movie> longestMoviesDesc =
+            new TreeSet<>(new DurationCmp(false));
+    private final SortedSet<Movie> ratedMoviesAsc =
+            new TreeSet<>(new RatingCmp(true));
+    private final SortedSet<Movie> ratedMoviesDesc =
+            new TreeSet<>(new RatingCmp(false));
 
-    public void populateMovieDB(List<MovieInputData> movieDB) {
+    public void populateMovieDB(VideoDB videoDB, List<MovieInputData> movieDB) {
         for (MovieInputData movie : movieDB) {
             Movie newMovie = new Movie(
                     movie.getTitle(),
@@ -30,8 +39,11 @@ public class MovieDB {
                     movie.getDuration()
             );
             this.movieDB.put(movie.getTitle(), newMovie);
-            longestMovies.add(newMovie);
-            ratedMovies.add(newMovie);
+            longestMoviesAsc.add(newMovie);
+            longestMoviesDesc.add(newMovie);
+            ratedMoviesDesc.add(newMovie);
+            ratedMoviesAsc.add(newMovie);
+            videoDB.populateVideoDB(newMovie);
         }
     }
 
@@ -47,28 +59,37 @@ public class MovieDB {
         return movieDB.get(title).getActors();
     }
 
-    public void addFavorites(String title) {
+    public void addFavorites(VideoDB videoDB, String title) {
         Movie tmp = movieDB.get(title);
-        favMovies.remove(tmp);
+        favMoviesDesc.remove(tmp);
+        favMoviesAsc.remove(tmp);
         tmp.addFavorite();
-        favMovies.add(tmp);
+        favMoviesDesc.add(tmp);
+        favMoviesAsc.add(tmp);
+        videoDB.updateVideoFav(tmp);
     }
 
     public void addViews(VideoDB videoDB, String title) {
         Movie tmp = movieDB.get(title);
-        viewedMovies.remove(tmp);
+        viewedMoviesAsc.remove(tmp);
+        viewedMoviesDesc.remove(tmp);
         tmp.addViews();
-        viewedMovies.add(tmp);
+        viewedMoviesAsc.add(tmp);
+        viewedMoviesDesc.add(tmp);
         videoDB.updateGenreViews(tmp);
     }
 
     public void addRating(VideoDB videoDB, String title, double rating) {
         Movie tmp;
         tmp = movieDB.get(title);
-        ratedMovies.remove(tmp);
+        ratedMoviesAsc.remove(tmp);
+        ratedMoviesDesc.remove(tmp);
+        videoDB.removeGenreVideoRatings(tmp);
         tmp.addRating(rating);
-        ratedMovies.add(tmp);
+        ratedMoviesAsc.add(tmp);
+        ratedMoviesDesc.add(tmp);
         videoDB.updateGenreVideoRatings(tmp);
+        videoDB.updateVideoRatings(tmp);
     }
 
     public boolean validFilters(Video video, String year, String genre) {
@@ -83,22 +104,33 @@ public class MovieDB {
         }
     }
 
-    public List<String> getTopK(String query, String year,
+    public List<String> getTopK(String query, String orderType, String year,
                                 String genre, int k) {
         List<String> list = new ArrayList<>();
         switch (query) {
             case "favorite":
-                for (Movie movie : favMovies) {
-                    if (validFilters(movie, year, genre)) {
-                        list.add(movie.getTitle());
+                if (orderType.equals("desc")) {
+                    for (Movie movie : favMoviesDesc) {
+                        if (validFilters(movie, year, genre)) {
+                            list.add(movie.getTitle());
+                        }
+                        if (list.size() == k) {
+                            break;
+                        }
                     }
-                    if (list.size() == k) {
-                        break;
+                } else {
+                    for (Movie movie : favMoviesAsc) {
+                        if (validFilters(movie, year, genre)) {
+                            list.add(movie.getTitle());
+                        }
+                        if (list.size() == k) {
+                            break;
+                        }
                     }
                 }
                 break;
             case "ratings":
-                for (Movie movie : ratedMovies) {
+                for (Movie movie : ratedMoviesAsc) {
                     if (validFilters(movie, year, genre) && movie.getTotalRating() != 0) {
                         list.add(movie.getTitle());
                     }
@@ -108,22 +140,44 @@ public class MovieDB {
                 }
                 break;
             case "most_viewed":
-                for (Movie movie : viewedMovies) {
-                    if (validFilters(movie, year, genre)) {
-                        list.add(movie.getTitle());
+                if (orderType.equals("desc")) {
+                    for (Movie movie : viewedMoviesDesc) {
+                        if (validFilters(movie, year, genre)) {
+                            list.add(movie.getTitle());
+                        }
+                        if (list.size() == k) {
+                            break;
+                        }
                     }
-                    if (list.size() == k) {
-                        break;
+                } else {
+                    for (Movie movie : viewedMoviesAsc) {
+                        if (validFilters(movie, year, genre)) {
+                            list.add(movie.getTitle());
+                        }
+                        if (list.size() == k) {
+                            break;
+                        }
                     }
                 }
                 break;
             case "longest":
-                for (Movie movie : longestMovies) {
-                    if (validFilters(movie, year, genre)) {
-                        list.add(movie.getTitle());
+                if (orderType.equals("desc")) {
+                    for (Movie movie : longestMoviesDesc) {
+                        if (validFilters(movie, year, genre)) {
+                            list.add(movie.getTitle());
+                        }
+                        if (list.size() == k) {
+                            break;
+                        }
                     }
-                    if (list.size() == k) {
-                        break;
+                } else {
+                    for (Movie movie : longestMoviesAsc) {
+                        if (validFilters(movie, year, genre)) {
+                            list.add(movie.getTitle());
+                        }
+                        if (list.size() == k) {
+                            break;
+                        }
                     }
                 }
                 break;
@@ -135,10 +189,10 @@ public class MovieDB {
     }
 
     public List<Movie> getTopRatedMovies() {
-        return new ArrayList<>(ratedMovies);
+        return new ArrayList<>(ratedMoviesDesc);
     }
 
     public List<Movie> getTopFavMovies() {
-        return new ArrayList<>(favMovies);
+        return new ArrayList<>(favMoviesAsc);
     }
 }

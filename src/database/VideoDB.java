@@ -1,6 +1,8 @@
 package database;
 
 import comparator.RatingCmp;
+import comparator.RecomFavCmp;
+import comparator.RecomRatingCmp;
 import fileio.MovieInputData;
 import fileio.SerialInputData;
 import video.GenreViews;
@@ -17,37 +19,18 @@ public class VideoDB {
     private final SortedSet<GenreViews> mostViewedGenres = new TreeSet<>();
     private final Map<String, SortedSet<Video>> genreVideoRatings =
             new HashMap<>();
+    private final SortedSet<Video> bestRatedVideos =
+            new TreeSet<>(new RecomRatingCmp(videoByIndex));
+    private final SortedSet<Video> mostFavVideos =
+            new TreeSet<>(new RecomFavCmp(videoByIndex));
     private int count = 0;
 
-    public void populateVideoDB(List<MovieInputData> movieDB,
-                                List<SerialInputData> showDB) {
-        for (MovieInputData movie : movieDB) {
-            unorderedVideos.add(unorderedVideos.size(), movie.getTitle());
-            videoByIndex.put(movie.getTitle(), count++);
-            Movie newMovie = new Movie(
-                    movie.getTitle(),
-                    movie.getCast(),
-                    movie.getGenres(),
-                    movie.getYear(),
-                    movie.getDuration()
-            );
-            populateGenreViews(newMovie);
-            updateGenreVideoRatings(newMovie);
-        }
-        for (SerialInputData show : showDB) {
-            unorderedVideos.add(unorderedVideos.size(), show.getTitle());
-            videoByIndex.put(show.getTitle(), count++);
-            Show newShow = new Show(
-                    show.getTitle(),
-                    show.getYear(),
-                    show.getGenres(),
-                    show.getCast(),
-                    show.getNumberSeason(),
-                    show.getSeasons()
-            );
-            populateGenreViews(newShow);
-            updateGenreVideoRatings(newShow);
-        }
+    public void populateVideoDB(Video video) {
+        unorderedVideos.add(unorderedVideos.size(), video.getTitle());
+        videoByIndex.put(video.getTitle(), count++);
+        bestRatedVideos.add(video);
+        populateGenreViews(video);
+        updateGenreVideoRatings(video);
     }
 
     public void populateGenreViews(Video video) {
@@ -78,7 +61,7 @@ public class VideoDB {
         }
     }
 
-    public void updateGenreVideoRatings(Video video) {
+    public void removeGenreVideoRatings(Video video) {
         String genreName;
 
         for (int i = 0; i < video.getGenres().size(); ++i) {
@@ -87,29 +70,61 @@ public class VideoDB {
             if (genre != null) {
                 genre.remove(video);
             } else {
-                genre = new TreeSet<>(new RatingCmp());
+                genre = new TreeSet<>(new RatingCmp(true));
+                genreVideoRatings.put(genreName, genre);
+            }
+        }
+    }
+
+    public void updateGenreVideoRatings(Video video) {
+        String genreName;
+
+        for (int i = 0; i < video.getGenres().size(); ++i) {
+            genreName = video.getGenres().get(i);
+            SortedSet<Video> genre = genreVideoRatings.get(genreName);
+            if (genre == null) {
+                genre = new TreeSet<>(new RatingCmp(true));
                 genreVideoRatings.put(genreName, genre);
             }
             genre.add(video);
         }
     }
 
+    public void updateVideoRatings(Video video) {
+        bestRatedVideos.remove(video);
+        bestRatedVideos.add(video);
+    }
+
+    public void updateVideoFav(Video video) {
+        mostFavVideos.remove(video);
+        mostFavVideos.add(video);
+    }
+
     public String getUnwatchedVideo(Map<String, Integer> history) {
         for (String unorderedVideo : unorderedVideos) {
             if (!history.containsKey(unorderedVideo)) {
-                return unorderedVideo;
+                return "StandardRecommendation result: " + unorderedVideo;
             }
         }
 
-        return null;
+        return "StandardRecommendation cannot be applied!";
     }
 
-    public String getBestVideo(MovieDB movieDB,
+    public String getBestVideo(Map<String, Integer> history) {
+        for (Video video : bestRatedVideos) {
+            if (!history.containsKey(video.getTitle())) {
+                return "BestRatedUnseenRecommendation result: " + video.getTitle();
+            }
+        }
+
+        return "BestRatedUnseenRecommendation cannot be applied!";
+    }
+
+    public String getBestVideo2(MovieDB movieDB,
                                ShowDB showDB, Map<String, Integer> history) {
+        String message = "BestRatedUnseenRecommendation result: ";
         List<Movie> movies = movieDB.getTopRatedMovies();
         List<Show> shows = showDB.getTopRatedShows();
-        Collections.reverse(movies);
-        Collections.reverse(shows);
         int first = 0, second = 0;
         int movies_size = movies.size(), shows_size = shows.size();
         Movie movie;
@@ -122,23 +137,23 @@ public class VideoDB {
                 if (movie.getTotalRating() > show.getTotalRating()) {
                     ++first;
                     if (!history.containsKey(movie.getTitle())) {
-                        return movie.getTitle();
+                        return message + movie.getTitle();
                     }
                 } else if (movie.getTotalRating() < show.getTotalRating()) {
                     ++second;
                     if (!history.containsKey(show.getTitle())) {
-                        return show.getTitle();
+                        return message + show.getTitle();
                     }
                 } else {
                     if (videoByIndex.get(movie.getTitle()) < videoByIndex.get(show.getTitle())) {
                         ++first;
                         if (!history.containsKey(movie.getTitle())) {
-                            return movie.getTitle();
+                            return message + movie.getTitle();
                         }
                     } else {
                         ++second;
                         if (!history.containsKey(show.getTitle())) {
-                            return show.getTitle();
+                            return message + show.getTitle();
                         }
                     }
                 }
@@ -146,35 +161,44 @@ public class VideoDB {
                 movie = movies.get(first);
                 ++first;
                 if (!history.containsKey(movie.getTitle())) {
-                    return movie.getTitle();
+                    return message + movie.getTitle();
                 }
             } else {
                 show = shows.get(second);
                 ++second;
                 if (!history.containsKey(show.getTitle())) {
-                    return show.getTitle();
+                    return message + show.getTitle();
                 }
             }
         }
 
-        return null;
+        return "BestRatedUnseenRecommendation cannot be applied!";
     }
 
     public String getPopularVideo(Map<String, Integer> history) {
-        String message = "PopularRecommendation result: ";
         String success;
 
         for (GenreViews genre : mostViewedGenres) {
             success = genre.getUnwatchedVideo(history);
             if (success != null) {
-                return message + success;
+                return "PopularRecommendation result: " + success;
             }
         }
 
-        return message;
+        return "PopularRecommendation cannot be applied!";
     }
 
-    public String getFavoriteVideo(MovieDB movieDB,
+    public String getFavoriteVideo(Map<String, Integer> history) {
+        for (Video video : mostFavVideos) {
+            if (!history.containsKey(video.getTitle())) {
+                return "FavoriteRecommendation result: " + video.getTitle();
+            }
+        }
+
+        return "FavoriteRecommendation cannot be applied!";
+    }
+
+    public String getFavoriteVideo2(MovieDB movieDB,
                                    ShowDB showDB, Map<String, Integer> history) {
         String message = "FavoriteRecommendation result: ";
         List<Movie> movies = movieDB.getTopFavMovies();

@@ -3,19 +3,23 @@ package database;
 import actor.Actor;
 import actor.ActorsAwards;
 import comparator.ActorAwardCmp;
-import comparator.ActorAscCmp;
-import comparator.ActorDescCmp;
+import comparator.ActorNameCmp;
 import comparator.ActorRatingCmp;
 import fileio.ActorInputData;
 
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class ActorDB {
     HashMap<String, Actor> actorDB = new HashMap<>();
-    SortedSet<Actor> ratedActors = new TreeSet<>(new ActorRatingCmp());
-    SortedSet<Actor> awardedActors = new TreeSet<>(new ActorAwardCmp());
-    SortedSet<Actor> ascendingActors = new TreeSet<>(new ActorAscCmp());
-    SortedSet<Actor> descendingActors = new TreeSet<>(new ActorDescCmp());
+    SortedSet<Actor> ratedActorsAsc = new TreeSet<>(new ActorRatingCmp(true));
+    SortedSet<Actor> ratedActorsDesc = new TreeSet<>(new ActorRatingCmp(false));
+    SortedSet<Actor> ascendingActors = new TreeSet<>(new ActorNameCmp(true));
+    SortedSet<Actor> descendingActors = new TreeSet<>(new ActorNameCmp(false));
+    SortedSet<Actor> awardedActorsAsc = new TreeSet<>(new ActorAwardCmp(true));
+    SortedSet<Actor> awardedActorsDesc =
+            new TreeSet<>(new ActorAwardCmp(false));
 
     public void populateActorDB(List<ActorInputData> actorDB) {
         for (ActorInputData actor : actorDB) {
@@ -26,9 +30,10 @@ public class ActorDB {
                     actor.getAwards()
             );
             this.actorDB.put(newActor.getName(), newActor);
-            awardedActors.add(newActor);
             ascendingActors.add(newActor);
             descendingActors.add(newActor);
+            awardedActorsAsc.add(newActor);
+            awardedActorsDesc.add(newActor);
         }
     }
 
@@ -36,9 +41,11 @@ public class ActorDB {
         for (String name : names) {
             Actor tmp = actorDB.get(name);
             if (tmp != null) {
-                ratedActors.remove(tmp);
+                ratedActorsAsc.remove(tmp);
+                ratedActorsDesc.remove(tmp);
                 tmp.addActorRating(title, rating);
-                ratedActors.add(tmp);
+                ratedActorsAsc.add(tmp);
+                ratedActorsDesc.add(tmp);
             }
         }
     }
@@ -52,10 +59,35 @@ public class ActorDB {
         return true;
     }
 
+    public List<Actor> prepareAwardedActors(List<Actor> actors,
+                                            List<String> awards) {
+        List<Actor> solution = new ArrayList<>();
+
+        boolean found = false;
+        for (Actor actor : actors) {
+            for (String award : awards) {
+                if (!actor.getAwards().containsKey(ActorsAwards.valueOf(award))) {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                solution.add(actor);
+            }
+            found = false;
+        }
+
+        return solution;
+    }
+
     public boolean validDescription(Actor actor,
                                     List<String> description) {
+        Matcher m;
+        Pattern p;
         for (String s : description) {
-            if (!actor.getCareerDescription().contains(s)) {
+            p = Pattern.compile(".*\\b" + Pattern.quote(s) + "\\b.*");
+            m = p.matcher(actor.getCareerDescription().toLowerCase());
+            if (!m.find()) {
                 return false;
             }
         }
@@ -68,12 +100,23 @@ public class ActorDB {
         List<String> list = new ArrayList<>();
         switch (query) {
             case "average":
-                for (Actor actor : ratedActors) {
-                    if (actor.getActorRating() != 0) {
-                        list.add(actor.getName());
+                if (sortOrder.equals("desc")) {
+                    for (Actor actor : ratedActorsDesc) {
+                        if (actor.getActorRating() != 0) {
+                            list.add(actor.getName());
+                        }
+                        if (list.size() == k) {
+                            break;
+                        }
                     }
-                    if (list.size() == k) {
-                        break;
+                } else {
+                    for (Actor actor : ratedActorsAsc) {
+                        if (actor.getActorRating() != 0) {
+                            list.add(actor.getName());
+                        }
+                        if (list.size() == k) {
+                            break;
+                        }
                     }
                 }
                 break;
@@ -99,12 +142,23 @@ public class ActorDB {
                 }
                 break;
             case "awards":
-                for (Actor actor : awardedActors) {
-                    if (validAwards(actor, awards)) {
-                        list.add(actor.getName());
+                if (sortOrder.equals("desc")) {
+                    for (Actor actor : awardedActorsDesc) {
+                        if (validAwards(actor, awards)) {
+                            list.add(actor.getName());
+                        }
+                        if (list.size() == k) {
+                            break;
+                        }
                     }
-                    if (list.size() == k) {
-                        break;
+                } else {
+                    for (Actor actor : awardedActorsAsc) {
+                        if (validAwards(actor, awards)) {
+                            list.add(actor.getName());
+                        }
+                        if (list.size() == k) {
+                            break;
+                        }
                     }
                 }
                 break;

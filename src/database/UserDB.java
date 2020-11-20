@@ -1,15 +1,17 @@
 package database;
 
+import comparator.UserActivityCmp;
 import fileio.UserInputData;
 import user.User;
-import video.Movie;
-import video.Show;
 
 import java.util.*;
 
 public class UserDB {
     private final HashMap<String, User> userDB = new HashMap<>();
-    private final SortedSet<User> activeUsers = new TreeSet<>();
+    private final SortedSet<User> activeUsersAsc =
+            new TreeSet<>(new UserActivityCmp(true));
+    private final SortedSet<User> activeUsersDesc =
+            new TreeSet<>(new UserActivityCmp(false));
 
     public void populateUserDB(List<UserInputData> users, MovieDB movieDB,
                                ShowDB showDB, VideoDB videoDB) {
@@ -25,9 +27,9 @@ public class UserDB {
             for (int i = 0; i < user.getFavoriteMovies().size(); ++i) {
                 title = user.getFavoriteMovies().get(i);
                 if (movieDB.isMovie(title)) {
-                    movieDB.addFavorites(title);
+                    movieDB.addFavorites(videoDB, title);
                 } else if (showDB.isShow(title)) {
-                    showDB.addFavorites(title);
+                    showDB.addFavorites(videoDB, title);
                 }
             }
             for (Map.Entry<String, Integer> entry : user.getHistory().entrySet()) {
@@ -54,9 +56,11 @@ public class UserDB {
         return new HashMap<>(history);
     }
 
-    public String addFavorites(MovieDB movieDB, ShowDB showDB, String username,
+    public String addFavorites(VideoDB videoDB, MovieDB movieDB, ShowDB showDB,
+                               String username,
                                String title) {
-        return userDB.get(username).addFavorite(movieDB, showDB, title);
+        return userDB.get(username).addFavorite(videoDB, movieDB, showDB,
+                title);
     }
 
     public String addViews(VideoDB videoDB, MovieDB movieDB, ShowDB showDB,
@@ -71,10 +75,12 @@ public class UserDB {
                                  String title,
                                   double rating) {
         User tmp = userDB.get(username);
-        activeUsers.remove(tmp);
+        activeUsersAsc.remove(tmp);
+        activeUsersDesc.remove(tmp);
         String message = tmp.addRatingMovie(actorDB, videoDB, movieDB, title,
                 rating);
-        activeUsers.add(tmp);
+        activeUsersDesc.add(tmp);
+        activeUsersAsc.add(tmp);
 
         return message;
     }
@@ -85,11 +91,13 @@ public class UserDB {
                                 int season,
                                 double rating) {
         User tmp = userDB.get(username);
-        activeUsers.remove(tmp);
+        activeUsersAsc.remove(tmp);
+        activeUsersDesc.remove(tmp);
         String message = tmp.addRatingShow(actorDB, videoDB, showDB, title,
                 season,
                 rating);
-        activeUsers.add(tmp);
+        activeUsersDesc.add(tmp);
+        activeUsersAsc.add(tmp);
 
         return message;
     }
@@ -98,14 +106,25 @@ public class UserDB {
         return userDB.get(username).isPremium();
     }
 
-    public String getTopK(int k) {
+    public String getTopK(String orderType, int k) {
         List<String> list = new ArrayList<>();
-        for (User user : activeUsers) {
-            if (user.isActive()) {
-                list.add(user.getUsername());
+        if (orderType.equals("desc")) {
+            for (User user : activeUsersDesc) {
+                if (user.isActive()) {
+                    list.add(user.getUsername());
+                }
+                if (list.size() == k) {
+                    break;
+                }
             }
-            if (list.size() == k) {
-                break;
+        } else {
+            for (User user : activeUsersAsc) {
+                if (user.isActive()) {
+                    list.add(user.getUsername());
+                }
+                if (list.size() == k) {
+                    break;
+                }
             }
         }
 
