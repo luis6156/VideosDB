@@ -132,12 +132,23 @@ public class ShowDB {
                 }
                 break;
             case "ratings":
-                for (Show show : ratedShowsAsc) {
-                    if (validFilters(show, year, genre) && show.getTotalRating() != 0) {
-                        list.add(show.getTitle());
+                if (orderType.equals("desc")) {
+                    for (Show show : ratedShowsDesc) {
+                        if (validFilters(show, year, genre) && show.getTotalRating() != 0) {
+                            list.add(show.getTitle());
+                        }
+                        if (list.size() == k) {
+                            break;
+                        }
                     }
-                    if (list.size() == k) {
-                        break;
+                } else {
+                    for (Show show : ratedShowsAsc) {
+                        if (validFilters(show, year, genre) && show.getTotalRating() != 0) {
+                            list.add(show.getTitle());
+                        }
+                        if (list.size() == k) {
+                            break;
+                        }
                     }
                 }
                 break;
@@ -188,13 +199,5 @@ public class ShowDB {
         }
 
         return list;
-    }
-
-    public List<Show> getTopRatedShows() {
-        return new ArrayList<>(ratedShowsDesc);
-    }
-
-    public List<Show> getTopFavShows() {
-        return new ArrayList<>(favShowsDesc);
     }
 }

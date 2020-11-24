@@ -187,12 +187,4 @@ public class MovieDB {
 
         return list;
     }
-
-    public List<Movie> getTopRatedMovies() {
-        return new ArrayList<>(ratedMoviesDesc);
-    }
-
-    public List<Movie> getTopFavMovies() {
-        return new ArrayList<>(favMoviesAsc);
-    }
 }

@@ -34,8 +34,6 @@ public class Actor {
         double old_rating = filmography.get(title);
         filmography.replace(title, rating);
         double totalRating = 0;
-//        actor_rating = actor_rating * filmography.size() - old_rating + rating;
-//        actor_rating /= filmography.size();
         for (Double videoRating : filmography.values()) {
             if (videoRating != 0) {
                 totalRating += videoRating;
