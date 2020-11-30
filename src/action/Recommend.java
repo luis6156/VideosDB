@@ -8,7 +8,7 @@ import org.json.simple.JSONArray;
 
 import java.io.IOException;
 
-public class Recommend {
+public abstract class Recommend {
     /**
      * Method used to add to output Recommended Action's success. If action type is unrecognised
      * adds null to output.

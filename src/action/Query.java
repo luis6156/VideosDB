@@ -10,7 +10,7 @@ import database.ShowDB;
 
 import java.io.IOException;
 
-public class Query {
+public abstract class Query {
     /**
      * Method used to add to output Query Action's success. If action type is unrecognised
      * adds "[]" to output.
@@ -28,6 +28,7 @@ public class Query {
                                    final ShowDB showDB, final UserDB userDB,
                                    final ActionInputData action, final Writer fileWriter,
                                    final JSONArray array) throws IOException {
+        final int tmp = 3; // for checkstyle (magic number)
         String message = switch (action.getObjectType()) {
             case "movies" -> movieDB.getTopK(
                     action.getCriteria(),
@@ -47,7 +48,7 @@ public class Query {
                     action.getCriteria(),
                     action.getSortType(),
                     action.getFilters().get(2),
-                    action.getFilters().get(3),
+                    action.getFilters().get(tmp),
                     action.getNumber()
             );
             default -> "[]";

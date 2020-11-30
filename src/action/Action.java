@@ -12,7 +12,7 @@ import org.json.simple.JSONArray;
 import java.io.IOException;
 import java.util.List;
 
-public class Action {
+public abstract class Action {
     /**
      * Method used for selecting Action type. If action is unrecognized, go to next action.
      *

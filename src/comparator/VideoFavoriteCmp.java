@@ -4,7 +4,7 @@ import video.Video;
 
 import java.util.Comparator;
 
-public class VideoFavoriteCmp implements Comparator<Video> {
+public final class VideoFavoriteCmp implements Comparator<Video> {
     // Ascending order (favorites/alphabetical)
     @Override
     public int compare(final Video self, final Video other) {

@@ -4,7 +4,7 @@ import video.Video;
 
 import java.util.Comparator;
 
-public class VideoRatingCmp implements Comparator<Video> {
+public final class VideoRatingCmp implements Comparator<Video> {
     // Ascending order (rating/alphabetical)
     @Override
     public int compare(final Video self, final Video other) {

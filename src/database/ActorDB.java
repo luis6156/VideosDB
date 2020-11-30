@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class ActorDB {
+public final class ActorDB {
     private final HashMap<String, Actor> actorDB = new HashMap<>();
     private final TreeSet<Actor> ratedActors = new TreeSet<>(new ActorRatingCmp());
     private final TreeSet<Actor> ascendingActors = new TreeSet<>(new ActorNameCmp());

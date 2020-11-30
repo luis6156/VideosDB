@@ -4,7 +4,7 @@ import user.User;
 
 import java.util.Comparator;
 
-public class UserActivityCmp implements Comparator<User> {
+public final class UserActivityCmp implements Comparator<User> {
     // Ascending order (activity, alphabetical)
     @Override
     public int compare(final User self, final User other) {

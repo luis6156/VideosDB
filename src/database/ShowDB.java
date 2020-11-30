@@ -14,7 +14,7 @@ import java.util.Collections;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-public class ShowDB extends MediaUtilsDB {
+public final class ShowDB extends MediaUtilsDB {
     private final HashMap<String, Show> showDB = new HashMap<>();
     private final TreeSet<Show> favShows = new TreeSet<>(new VideoFavoriteCmp());
     private final TreeSet<Show> viewedShows = new TreeSet<>(new VideoViewCmp());

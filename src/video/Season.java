@@ -3,11 +3,11 @@ package video;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Season {
+public final class Season {
     private final int currentSeason;
     private final int duration;
     private final List<Double> ratings = new ArrayList<>();
-    private double season_rating;
+    private double seasonRating;
 
     /**
      * @param currentSeason season's number
@@ -24,19 +24,19 @@ public class Season {
      * @param rating rating to be added
      */
     public void addRating(final double rating) {
-        double tmp_rating = 0;
+        double tmpRating = 0;
 
         ratings.add(rating);
         for (Double aDouble : ratings) {
-            tmp_rating += aDouble;
+            tmpRating += aDouble;
         }
 
-        season_rating = tmp_rating / ratings.size();
+        seasonRating = tmpRating / ratings.size();
     }
 
     // Returns season's rating
     public double getSeasonRating() {
-        return season_rating;
+        return seasonRating;
     }
 
     // Returns season's duration

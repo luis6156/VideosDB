@@ -5,10 +5,10 @@ import video.Video;
 import java.util.Comparator;
 import java.util.Map;
 
-public class RecomFavCmp implements Comparator<Video> {
+public final class RecomFavCmp implements Comparator<Video> {
     private final Map<String, Integer> videoByIndex;
 
-    public RecomFavCmp(Map<String, Integer> videoByIndex) {
+    public RecomFavCmp(final Map<String, Integer> videoByIndex) {
         this.videoByIndex = videoByIndex;
     }
 
@@ -28,8 +28,8 @@ public class RecomFavCmp implements Comparator<Video> {
             otherIndex = videoByIndex.get(other.getTitle());
             // If its first time video is added to database, push it to tail to maintain
             // insertion order
-            if (!videoByIndex.containsKey(self.getTitle()) ||
-                    !videoByIndex.containsKey(other.getTitle())) {
+            if (!videoByIndex.containsKey(self.getTitle())
+                    || !videoByIndex.containsKey(other.getTitle())) {
                 return 1;
             } else {
                 // Second criteria

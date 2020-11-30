@@ -4,7 +4,7 @@ import entertainment.Season;
 
 import java.util.ArrayList;
 
-public class Show extends Video {
+public final class Show extends Video {
     private final int numberOfSeasons;
     private final ArrayList<video.Season> seasons = new ArrayList<>();
 
@@ -16,10 +16,9 @@ public class Show extends Video {
      * @param numberOfSeasons show's number of seasons
      * @param seasons         show's list of season objects
      */
-    public Show(final String title, final int year,
-                final ArrayList<String> genres,
-                final ArrayList<String> cast,
-                final int numberOfSeasons, final ArrayList<Season> seasons) {
+    public Show(final String title, final int year, final ArrayList<String> genres,
+                final ArrayList<String> cast, final int numberOfSeasons,
+                final ArrayList<Season> seasons) {
         super(title, year, genres, cast);
         this.numberOfSeasons = numberOfSeasons;
         // Translate entertainment's season object to video's season object
@@ -31,12 +30,12 @@ public class Show extends Video {
     }
 
     /**
-     * @param seasons list of seasons to compute total duration
+     * @param seasonsArray list of seasons to compute total duration
      * @return total duration of show
      */
-    private int setTotalDuration(final ArrayList<Season> seasons) {
+    private int setTotalDuration(final ArrayList<Season> seasonsArray) {
         int duration = 0;
-        for (Season season : seasons) {
+        for (Season season : seasonsArray) {
             duration += season.getDuration();
         }
 

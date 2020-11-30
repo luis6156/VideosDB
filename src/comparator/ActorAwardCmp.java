@@ -4,7 +4,7 @@ import actor.Actor;
 
 import java.util.Comparator;
 
-public class ActorAwardCmp implements Comparator<Actor> {
+public final class ActorAwardCmp implements Comparator<Actor> {
     // Ascending order (number of awards/alphabetical)
     @Override
     public int compare(final Actor self, final Actor other) {

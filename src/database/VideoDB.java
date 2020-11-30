@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
 
-public class VideoDB {
+public final class VideoDB {
     private final List<String> unorderedVideos = new ArrayList<>();
     private final Map<String, Integer> videoByIndex = new HashMap<>();
     private final Map<String, GenrePopularity> genreViews = new HashMap<>();

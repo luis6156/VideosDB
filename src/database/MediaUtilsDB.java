@@ -3,11 +3,21 @@ package database;
 import video.Video;
 
 public abstract class MediaUtilsDB {
-    // Method to add views to video
-    public abstract void addViews(final VideoDB videoDB, final String title);
+    /**
+     * Increment video favorite counter and update databases.
+     *
+     * @param videoDB updates favorite TreeSet (Favorite Recommendation)
+     * @param title   title of the video to be added to favorite
+     */
+    public abstract void addViews(VideoDB videoDB, String title);
 
-    // Method to increment favorite counter to video
-    public abstract void addFavorites(final VideoDB videoDB, final String title);
+    /**
+     * Increment video views counter and update databases.
+     *
+     * @param videoDB updates views TreeSet (Popular Recommendation)
+     * @param title   title of the video to be incremented views counter
+     */
+    public abstract void addFavorites(VideoDB videoDB, String title);
 
     /**
      * Checks if video respects filters, if any of the two filters are given (Video Query).
@@ -17,8 +27,7 @@ public abstract class MediaUtilsDB {
      * @param genre genre filter
      * @return true if video respects filters, otherwise false
      */
-    public boolean validFilters(final Video video, final String year,
-                                final String genre) {
+    protected boolean validFilters(final Video video, final String year, final String genre) {
         if (year != null && genre != null) {
             return video.getGenres().contains(genre) && video.getYear() == Integer.parseInt(year);
         } else if (year == null && genre != null) {
@@ -40,6 +49,6 @@ public abstract class MediaUtilsDB {
      * @param k         number of titles to be returned
      * @return query operation or null if wrong query
      */
-    public abstract String getTopK(final String query, final String orderType, final String year,
-                                   final String genre, final int k);
+    public abstract String getTopK(String query, String orderType, String year, String genre,
+                                   int k);
 }

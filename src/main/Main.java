@@ -4,7 +4,11 @@ import action.Action;
 import checker.Checkstyle;
 import checker.Checker;
 import common.Constants;
-import database.*;
+import database.MovieDB;
+import database.ShowDB;
+import database.UserDB;
+import database.VideoDB;
+import database.ActorDB;
 import fileio.Input;
 import fileio.InputLoader;
 import fileio.Writer;
@@ -15,12 +19,10 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 /**
- * The entry point to this homework. It runs the checker that tests your implentation.
+ * The entry point to this homework. It runs the checker that tests your implementation.
  */
 public final class Main {
     /**
@@ -45,7 +47,6 @@ public final class Main {
 
         Checker checker = new Checker();
         checker.deleteFiles(outputDirectory.listFiles());
-        final long startTime = System.nanoTime();
         for (File file : Objects.requireNonNull(directory.listFiles())) {
 
             String filepath = Constants.OUT_PATH + file.getName();
@@ -55,9 +56,6 @@ public final class Main {
                 action(file.getAbsolutePath(), filepath);
             }
         }
-        long endTime   = System.nanoTime();
-        long totalTime = endTime - startTime;
-        System.out.println(totalTime / 100000000);
         checker.iterateFiles(Constants.RESULT_PATH, Constants.REF_PATH, Constants.TESTS_PATH);
         Checkstyle test = new Checkstyle();
         test.testCheckstyle();

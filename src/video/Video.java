@@ -20,8 +20,7 @@ public abstract class Video {
      * @param genres video's genre
      * @param actors video's list of actors
      */
-    public Video(final String title, final int year,
-                 final ArrayList<String> genres,
+    public Video(final String title, final int year, final ArrayList<String> genres,
                  final ArrayList<String> actors) {
         this.title = title;
         this.year = year;
@@ -29,47 +28,51 @@ public abstract class Video {
         this.actors = actors;
     }
 
-    // Increments video's favorite counter
-    public void addFavorite() {
+    /**
+     * Increment favorite counters.
+     */
+    public final void addFavorite() {
         ++favorites;
     }
 
-    // Increments video's views counter
-    public void addViews() {
+    /**
+     * Increment views counter.
+     */
+    public final void addViews() {
         ++views;
     }
 
     // Returns video favorite counter
-    public int getFavorites() {
+    public final int getFavorites() {
         return favorites;
     }
 
     // Returns video views counter
-    public int getViews() {
+    public final int getViews() {
         return views;
     }
 
     // Returns video title
-    public String getTitle() {
+    public final String getTitle() {
         return title;
     }
 
     // Returns video year
-    public int getYear() {
+    public final int getYear() {
         return year;
     }
 
     /**
      * @return unmodifiable actors list
      */
-    public List<String> getActors() {
+    public final List<String> getActors() {
         return Collections.unmodifiableList(actors);
     }
 
     /**
      * @return unmodifiable genres list
      */
-    public List<String> getGenres() {
+    public final List<String> getGenres() {
         return Collections.unmodifiableList(genres);
     }
 
@@ -79,12 +82,12 @@ public abstract class Video {
     protected abstract void setTotalRating();
 
     // Returns total duration of video
-    public int getTotalDuration() {
+    public final int getTotalDuration() {
         return totalDuration;
     }
 
     // Returns total rating of video
-    public double getTotalRating() {
+    public final double getTotalRating() {
         return totalRating;
     }
 }

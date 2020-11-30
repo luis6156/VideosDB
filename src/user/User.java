@@ -10,7 +10,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-public class User {
+public final class User {
     private final String username;
     private final String subscriptionType;
     private final Map<String, Integer> history;

@@ -11,7 +11,7 @@ import org.json.simple.JSONArray;
 
 import java.io.IOException;
 
-public class Command {
+public abstract class Command {
     /**
      * Method used to add to output Command Action's success. If action type is unrecognised
      * adds null to output.

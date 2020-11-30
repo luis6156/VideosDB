@@ -12,7 +12,7 @@ import java.util.Collections;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-public class UserDB {
+public final class UserDB {
     private final HashMap<String, User> userDB = new HashMap<>();
     private final TreeSet<User> activeUsers = new TreeSet<>(new UserActivityCmp());
 

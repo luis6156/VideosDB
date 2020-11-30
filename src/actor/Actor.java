@@ -5,7 +5,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Actor {
+public final class Actor {
     private final String name;
     private final String careerDescription;
     private final Map<String, Double> filmography = new HashMap<>();
@@ -62,10 +62,12 @@ public class Actor {
         return totalAwards;
     }
 
+    // Returns actor's name
     public String getName() {
         return name;
     }
 
+    // Returns actor's career description
     public String getCareerDescription() {
         return careerDescription;
     }
@@ -75,6 +77,7 @@ public class Actor {
         return Collections.unmodifiableMap(awards);
     }
 
+    // Returns actor's total rating
     public double getActorRating() {
         return actorRating;
     }
