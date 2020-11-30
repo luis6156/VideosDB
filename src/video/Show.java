@@ -9,12 +9,12 @@ public class Show extends Video {
     private final ArrayList<video.Season> seasons = new ArrayList<>();
 
     /**
-     * @param title           show title
-     * @param year            show year
-     * @param genres          show genres
-     * @param cast            show list of actors
-     * @param numberOfSeasons show number of seasons
-     * @param seasons         show list of season objects
+     * @param title           show's title
+     * @param year            show's year
+     * @param genres          show's genres
+     * @param cast            show's list of actors
+     * @param numberOfSeasons show's number of seasons
+     * @param seasons         show's list of season objects
      */
     public Show(final String title, final int year,
                 final ArrayList<String> genres,

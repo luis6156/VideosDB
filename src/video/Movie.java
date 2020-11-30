@@ -8,11 +8,11 @@ public class Movie extends Video {
     private final int duration;
 
     /**
-     * @param title    movie title
-     * @param actors   movie list of actors
-     * @param genres   movie list of genres
-     * @param year     movie year
-     * @param duration movie duration
+     * @param title    movie's title
+     * @param actors   movie's list of actors
+     * @param genres   movie's list of genres
+     * @param year     movie's year
+     * @param duration movie's duration
      */
     public Movie(final String title, final ArrayList<String> actors,
                  final ArrayList<String> genres, final int year,

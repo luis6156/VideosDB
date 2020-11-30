@@ -15,10 +15,10 @@ public abstract class Video {
     protected double totalRating = 0;
 
     /**
-     * @param title  video title
-     * @param year   video year
-     * @param genres video genre
-     * @param actors video list of actors
+     * @param title  video's title
+     * @param year   video's year
+     * @param genres video's genre
+     * @param actors video's list of actors
      */
     public Video(final String title, final int year,
                  final ArrayList<String> genres,

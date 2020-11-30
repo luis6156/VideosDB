@@ -14,21 +14,19 @@ import java.util.Iterator;
 
 public class UserDB {
     private final HashMap<String, User> userDB = new HashMap<>();
-    private final TreeSet<User> activeUsers =
-            new TreeSet<>(new UserActivityCmp());
+    private final TreeSet<User> activeUsers = new TreeSet<>(new UserActivityCmp());
 
     /**
-     * Constructor that assigns values to User class attributes and updates databases with its data
+     * Constructor that assigns values to User class attributes and updates databases with its
+     * data.
      *
-     * @param users list of UserInputData to be translated to User class
+     * @param users   list of UserInputData to be translated to User class
      * @param movieDB update MovieDB with user's favorite movies and history
-     * @param showDB update ShowDB with user's favorite shows and history
+     * @param showDB  update ShowDB with user's favorite shows and history
      * @param videoDB updates VideoDB with user's favorite videos and history
      */
-    public void populateUserDB(final List<UserInputData> users,
-                               final MovieDB movieDB,
-                               final ShowDB showDB,
-                               final VideoDB videoDB) {
+    public void populateUserDB(final List<UserInputData> users, final MovieDB movieDB,
+                               final ShowDB showDB, final VideoDB videoDB) {
         String title;
         // Create new User
         for (UserInputData user : users) {
@@ -38,7 +36,7 @@ public class UserDB {
                     user.getHistory(),
                     user.getFavoriteMovies()
             );
-            // Put user into UserDB
+            // Put User into UserDB
             userDB.put(newUser.getUsername(), newUser);
             // Update database favorite videos, shows, movies
             for (int i = 0; i < user.getFavoriteMovies().size(); ++i) {
@@ -66,7 +64,6 @@ public class UserDB {
     }
 
     /**
-     *
      * @param username user's username to be queried
      * @return true if user is in database, otherwise false
      */
@@ -75,7 +72,6 @@ public class UserDB {
     }
 
     /**
-     *
      * @param username user's username to be queried
      * @return unmodifiable map of user's history
      */
@@ -85,53 +81,45 @@ public class UserDB {
     }
 
     /**
-     *
-     * @param videoDB updates VideoDB favorite (Favorite Recommendation)
-     * @param movieDB updates MovieDB favorite (Favorite Query)
-     * @param showDB updates ShowDB favorite (Favorite Query)
+     * @param videoDB  updates VideoDB favorite (Favorite Recommendation)
+     * @param movieDB  updates MovieDB favorite (Favorite Query)
+     * @param showDB   updates ShowDB favorite (Favorite Query)
      * @param username user's username to be queried
-     * @param title video title to be added to favorite
+     * @param title    video title to be added to favorite
      * @return success or error
      */
-    public String addFavorites(final VideoDB videoDB, final MovieDB movieDB,
-                               final ShowDB showDB,
-                               final String username,
-                               final String title) {
+    public String addFavorites(final VideoDB videoDB, final MovieDB movieDB, final ShowDB showDB,
+                               final String username, final String title) {
         return userDB.get(username).addFavorite(videoDB, movieDB, showDB,
                 title);
     }
 
     /**
-     *
-     * @param videoDB updates VideoDB views (Popular Recommendation)
-     * @param movieDB updates MovieDB favorite (Views Query)
-     * @param showDB updates ShowDB favorite (Views Query)
+     * @param videoDB  updates VideoDB views (Popular Recommendation)
+     * @param movieDB  updates MovieDB favorite (Views Query)
+     * @param showDB   updates ShowDB favorite (Views Query)
      * @param username user's username to be queried
-     * @param title video title to be incremented views counter
+     * @param title    video title to be incremented views counter
      * @return success or error
      */
-    public String addViews(final VideoDB videoDB, final MovieDB movieDB,
-                           final ShowDB showDB,
-                           final String username,
-                           final String title) {
+    public String addViews(final VideoDB videoDB, final MovieDB movieDB, final ShowDB showDB,
+                           final String username, final String title) {
         return userDB.get(username).addViews(videoDB, movieDB, showDB, title);
     }
 
     /**
-     * Adds rating to a movie, updates user's activity if successful
+     * Adds rating to a movie, updates user's activity if successful.
      *
-     * @param actorDB updated ActorDB rating (Average Actor Query)
-     * @param videoDB updates VideoDB rating (BestRatedUnseen & Search Recommendation)
-     * @param movieDB updates MovieDB rating (Rating Query)
+     * @param actorDB  updated ActorDB rating (Average Actor Query)
+     * @param videoDB  updates VideoDB rating (BestRatedUnseen & Search Recommendation)
+     * @param movieDB  updates MovieDB rating (Rating Query)
      * @param username user's username to be queried
-     * @param title video title to be added new rating
-     * @param rating rating value
+     * @param title    video title to be added new rating
+     * @param rating   rating value
      * @return success or error
      */
     public String addRatingMovie(final ActorDB actorDB, final VideoDB videoDB,
-                                 final MovieDB movieDB,
-                                 final String username,
-                                 final String title,
+                                 final MovieDB movieDB, final String username, final String title,
                                  final double rating) {
         User tmp = userDB.get(username);
         activeUsers.remove(tmp);
@@ -143,22 +131,19 @@ public class UserDB {
     }
 
     /**
-     * Adds rating to a show's season, updates user's activity if successful
+     * Adds rating to a show's season, updates user's activity if successful.
      *
-     * @param actorDB updated ActorDB rating (Average Actor Query)
-     * @param videoDB updates VideoDB rating (BestRatedUnseen & Search Recommendation)
-     * @param showDB updates ShowDB rating (Rating Query)
+     * @param actorDB  updated ActorDB rating (Average Actor Query)
+     * @param videoDB  updates VideoDB rating (BestRatedUnseen & Search Recommendation)
+     * @param showDB   updates ShowDB rating (Rating Query)
      * @param username user's username to be queried
-     * @param title video title to be added new rating
-     * @param season season to be rated
-     * @param rating rating value
+     * @param title    video title to be added new rating
+     * @param season   season to be rated
+     * @param rating   rating value
      * @return success or error
      */
-    public String addRatingShow(final ActorDB actorDB, final VideoDB videoDB,
-                                final ShowDB showDB,
-                                final String username,
-                                final String title,
-                                final int season,
+    public String addRatingShow(final ActorDB actorDB, final VideoDB videoDB, final ShowDB showDB,
+                                final String username, final String title, final int season,
                                 final double rating) {
         User tmp = userDB.get(username);
         activeUsers.remove(tmp);
@@ -171,7 +156,6 @@ public class UserDB {
     }
 
     /**
-     *
      * @param username user's username to be queried
      * @return true is user is PREMIUM, otherwise false
      */
@@ -180,9 +164,10 @@ public class UserDB {
     }
 
     /**
+     * Function used for User Query command.
      *
      * @param orderType type of order (asc/desc)
-     * @param k number of users to be returned
+     * @param k         number of users to be returned
      * @return most active users by specified order
      */
     public String getTopK(final String orderType, final int k) {

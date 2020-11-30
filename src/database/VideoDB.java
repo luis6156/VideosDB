@@ -17,12 +17,9 @@ public class VideoDB {
     private final Map<String, Integer> videoByIndex = new HashMap<>();
     private final Map<String, GenrePopularity> genreViews = new HashMap<>();
     private final TreeSet<GenrePopularity> mostViewedGenres = new TreeSet<>();
-    private final Map<String, TreeSet<Video>> genreVideoRatings =
-            new HashMap<>();
-    private final TreeSet<Video> bestRatedVideos =
-            new TreeSet<>(new RecomRatingCmp(videoByIndex));
-    private final TreeSet<Video> mostFavVideos =
-            new TreeSet<>(new RecomFavCmp(videoByIndex));
+    private final Map<String, TreeSet<Video>> genreVideoRatings = new HashMap<>();
+    private final TreeSet<Video> bestRatedVideos = new TreeSet<>(new RecomRatingCmp(videoByIndex));
+    private final TreeSet<Video> mostFavVideos = new TreeSet<>(new RecomFavCmp(videoByIndex));
     private int count = 0;
 
     /**
@@ -63,8 +60,9 @@ public class VideoDB {
     }
 
     /**
-     * Removes all genres from TreeSet, updates the views and add it back (to reset order)
-     * (Popular Recommendation)
+     * Removes all genres from TreeSet, updates the views and adds it back to reset order
+     * (Popular Recommendation). Only one method is necessary for update because this TreeSet
+     * uses another type of Object that can be queried and changed from VideoDB (GenrePopularity)
      *
      * @param video video used to extract information
      */
@@ -229,12 +227,11 @@ public class VideoDB {
     /**
      * Gets the first video unwatched by user by rating (descending) or name from a genre
      *
-     * @param genre genre to be queried
+     * @param genre   genre to be queried
      * @param history user's history
      * @return Search Recommendation result
      */
-    public String getSearchedVideo(final String genre,
-                                   final Map<String, Integer> history) {
+    public String getSearchedVideo(final String genre, final Map<String, Integer> history) {
         List<String> solution = new ArrayList<>();
         String message = "SearchRecommendation result: ";
 

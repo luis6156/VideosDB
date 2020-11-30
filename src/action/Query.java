@@ -11,12 +11,22 @@ import database.ShowDB;
 import java.io.IOException;
 
 public class Query {
-    public static void chooseQuery(final ActorDB actorDB,
-                                   final MovieDB movieDB,
-                                   final ShowDB showDB,
-                                   final UserDB userDB,
-                                   final ActionInputData action,
-                                   final Writer fileWriter,
+    /**
+     * Method used to add to output Query Action's success. If action type is unrecognised
+     * adds "[]" to output.
+     *
+     * @param actorDB    used for Actor Query
+     * @param movieDB    used for Video Query
+     * @param showDB     used for Show Query
+     * @param userDB     used for User Query
+     * @param action     used for input criteria
+     * @param fileWriter used to return JSONObject for output
+     * @param array      used for writing to output
+     * @throws IOException file IO exceptions
+     */
+    public static void chooseQuery(final ActorDB actorDB, final MovieDB movieDB,
+                                   final ShowDB showDB, final UserDB userDB,
+                                   final ActionInputData action, final Writer fileWriter,
                                    final JSONArray array) throws IOException {
         String message = switch (action.getObjectType()) {
             case "movies" -> movieDB.getTopK(

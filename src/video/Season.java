@@ -10,8 +10,8 @@ public class Season {
     private double season_rating;
 
     /**
-     * @param currentSeason season number
-     * @param duration      duration of season
+     * @param currentSeason season's number
+     * @param duration      season's duration
      */
     public Season(final int currentSeason, final int duration) {
         this.currentSeason = currentSeason;
