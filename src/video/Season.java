@@ -27,8 +27,8 @@ public final class Season {
         double tmpRating = 0;
 
         ratings.add(rating);
-        for (Double aDouble : ratings) {
-            tmpRating += aDouble;
+        for (Double currRating : ratings) {
+            tmpRating += currRating;
         }
 
         seasonRating = tmpRating / ratings.size();

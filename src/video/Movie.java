@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 public final class Movie extends Video {
     private final ArrayList<Double> ratings = new ArrayList<>();
-
     private final int duration;
 
     /**
