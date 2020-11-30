@@ -1,1 +1,103 @@
-lorem ipsum
+VideosDB - Copyright Micu Florian-Luis 321CA 2020
+
+I will describe each created package briefly.
+
+src/videos:
+I created my own classed for movies and shows. Both extend the superclass 
+"Video" as they have common properties. Shows usses a custom class for seasons.
+In these classes I implemented all methods for adding a rating and computing
+a video's overall rating, for incrementing a video views counter or its
+favorite counter.
+
+src/user:
+In here, the class User is used to process commands. A user can add a rating,
+add a video to favorites or increment his view counter. The first two
+operations could not be processed if the video wasn't viewed. When an action
+is successful, the databases get updated (ActorDB, UserDB, VideoDB, MovieDB,
+ShowDB) for queries and recommendations. 
+Note: For shows in order to check if a show or movie was rated, I used a Map
+that uses as keys the movie name or the show's name + "season" + show's season
+number. This way I can use just one data structure. I put "season" to help the
+hash function differentiate better.
+
+src/actor:
+The class "Actor" is used to store an actor's information. The class also 
+stores the total number of awards and an actor's overall rating. When a video
+is rated, the overall video's rating is added or replaces the old rating and
+the actor's overall rating is recalculated.
+
+src/database:
+This package purpose is to group all kinds of entities (actors, users, videos)
+in order to make processing an action easier. In here, all entities methods are
+being called if needed (eg. addRating) for a specific entry. ActorDB is used
+for Actor Query, UserDB is used for User Query, MovieDB and ShowDB is used for
+Video Query and VideoDB is used for Recommendation Action. Moreover, I added
+some methods that are used to return the Query Action's result. 
+
+In order to sort all entities by the query criteria I used TreeSets and 
+HashMaps. In an actual database, a query is called a lot so we need speed
+efficiency. Using a Tree data structure, I manage to get O(logN) for insert/
+delete/search operations, it also allows me to keep the entities sorted at all
+times which means that I will just have to traverse the Tree for the "k"
+elements which gets me O(k) time. Using the HashMap is vital, for example if I
+update a Video's views the Tree will not be sorted anymore, thus I need to
+remove the node, increment its views and add it back, hence the need of a 
+HashMap to get the correct node object with a complexity of O(1). All
+operations are amortized O(1) or O(logN), so if we run n times "addViews" and
+obtain the top k, the worst case performance would be O(NlogN). I could have
+used a standard list in Java and call the "sort" method that uses "TimSort",
+however if I change a movie views counter I have to sort all of the videos
+again. By using Trees, the update operation costs me amortized O(logN) as
+opposed to TimSorts's O(NlogN) time. Another approach could have been the 
+BucketSort algorithm, however we need input that is uniformly distributed
+across a range which is not our case, thus wrecking performance.
+
+Furthermore, all databases operations on entities update all databases by
+removing the node first, updating its value and adding it again. When the
+query is made, the algorithm parses the Tree and applies the filters needed.
+All Trees are sorted in ascending order, if we need to reverse the order, 
+we take a "reverse iterator" that's present in Java 8 and iterate from the
+tail of the Tree to the head.
+
+For Query Action, I needed to have a MovieDB and ShowDB since the input asks
+for a certain type of video. However, for Recommendation Action, I needed to
+group all videos into one entity (VideoDB). When the MovieDB and ShowDB are
+initialized and populated, so is the VideoDB with references of movies
+and shows in this order (to maintain order of input). This way we don't create
+other entities, we just pass the reference to VideosDB saving space.
+
+src/comparator:
+In this package, I store all the classes that override the default comparator.
+The comparators are then used for sorting the Trees based on the Action type.
+
+src/action:
+For this package, all actions are being separated into smaller actions.
+
+Command:
+Call the right method from UserDB to add rating, increment views or favorites.
+If the operation was successful the databases are updated, otherwise we return 
+an error message.
+
+Query:
+In here we just call "getTopK" from ActorDB, MovieDB, ShowDB or UserDB with
+the right filters.
+Note: Actor's decription originally used regex with the pattern "//b",
+however I found that this pattern "[ ,!.'(-]" is almost 500% faster. Yikes.
+
+Recommendation:
+For this Action, we call different methods from VideosDB. I couldn't use the
+"getTopK" method from MoviesDB or ShowDB as it has a different second order
+criteria. The implementation was the same as for the Query. There is a
+difference for Popular Recommendation, I needed a class that could contain
+a genre's name, the videos that have that genre as an attribute and the
+genre's total views. Thus, I created the class GenrePopularity in
+src/entertainment.
+
+Final Notes:
+In main I just populated all databases and then I processed the actions. My
+main focus was to make this project run fast. I maintained encapsulation by
+making sure I respect the "Tell. Don't ask." principle, if a getter was needed
+I made sure it returned an unmodifiable object (primitives or Collections).
+
+
+
