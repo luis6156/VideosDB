@@ -98,6 +98,3 @@ In main I just populated all databases and then I processed the actions. My
 main focus was to make this project run fast. I maintained encapsulation by
 making sure I respect the "Tell. Don't ask." principle, if a getter was needed
 I made sure it returned an unmodifiable object (primitives or Collections).
-
-
-
