@@ -51,7 +51,9 @@ again. By using Trees, the update operation costs me amortized O(logN) as
 opposed to TimSorts's O(NlogN) time. Another approach could have been the 
 BucketSort algorithm, however we need input that is uniformly distributed
 across a range which is not our case, thus wrecking performance.
-Further reading: leetcode.com/problems/top-k-frequent-elements/solution/
+
+Similar sorting problem from LeetCode:
+https://leetcode.com/problems/top-k-frequent-elements/solution/
 
 Furthermore, all databases operations on entities update all databases by
 removing the node first, updating its value and adding it again. When the
