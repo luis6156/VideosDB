@@ -5,29 +5,17 @@ import user.User;
 import java.util.Comparator;
 
 public class UserActivityCmp implements Comparator<User> {
-    private final boolean isAscending;
-
-    public UserActivityCmp(boolean isAscending) {
-        this.isAscending = isAscending;
-    }
-
-    // Ascending/Descending order
+    // Ascending order
     @Override
-    public int compare(User self, User other) {
+    public int compare(final User self, final User other) {
         int result;
 
         result = Integer.compare(self.getActivity(), other.getActivity());
 
         if (result != 0) {
-            if (isAscending) {
-                return result;
-            }
-            return -result;
+            return result;
         }
 
-        if (isAscending) {
-            return self.getUsername().compareTo(other.getUsername());
-        }
-        return -self.getUsername().compareTo(other.getUsername());
+        return self.getUsername().compareTo(other.getUsername());
     }
 }

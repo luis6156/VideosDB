@@ -11,24 +11,26 @@ import database.ShowDB;
 import java.io.IOException;
 
 public class Query {
-    public static void chooseQuery(ActorDB actorDB, MovieDB movieDB,
-                                   ShowDB showDB,
-                                   UserDB userDB,
-                                   ActionInputData action,
-                                   Writer fileWriter, JSONArray array) throws IOException {
+    public static void chooseQuery(final ActorDB actorDB,
+                                   final MovieDB movieDB,
+                                   final ShowDB showDB,
+                                   final UserDB userDB,
+                                   final ActionInputData action,
+                                   final Writer fileWriter,
+                                   final JSONArray array) throws IOException {
         String message = switch (action.getObjectType()) {
             case "movies" -> movieDB.getTopK(
                     action.getCriteria(),
                     action.getSortType(),
                     action.getFilters().get(0).get(0),
                     action.getFilters().get(1).get(0),
-                    action.getNumber()).toString();
+                    action.getNumber());
             case "shows" -> showDB.getTopK(
                     action.getCriteria(),
                     action.getSortType(),
                     action.getFilters().get(0).get(0),
                     action.getFilters().get(1).get(0),
-                    action.getNumber()).toString();
+                    action.getNumber());
             case "users" -> userDB.getTopK(action.getSortType(),
                     action.getNumber());
             case "actors" -> actorDB.getTopK(
@@ -40,7 +42,7 @@ public class Query {
             );
             default -> "[]";
         };
-        array.add(array.size(), fileWriter.writeFile(action.getActionId(), ""
-                , "Query result: " + message));
+        array.add(array.size(), fileWriter.writeFile(action.getActionId(), "",
+                "Query result: " + message));
     }
 }

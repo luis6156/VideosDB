@@ -77,6 +77,8 @@ public final class Main {
         JSONArray arrayResult = new JSONArray();
 
         //TODO add here the entry point to your implementation
+
+        // Initialise databases and populate them
         UserDB userDB = new UserDB();
         VideoDB videoDB = new VideoDB();
         MovieDB movieDB = new MovieDB();
@@ -86,10 +88,14 @@ public final class Main {
         showDB.populateShowDB(videoDB, input.getSerials());
         userDB.populateUserDB(input.getUsers(), movieDB, showDB, videoDB);
         actorDB.populateActorDB(input.getActors());
+
+        // Process action
         Action.chooseAction(videoDB, actorDB, movieDB, showDB, userDB,
                 input.getCommands(),
                 fileWriter,
                 arrayResult);
+
+        // Write to output
         fileWriter.closeJSON(arrayResult);
     }
 }

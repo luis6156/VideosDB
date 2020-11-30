@@ -1,20 +1,16 @@
 package actor;
 
-import database.MovieDB;
-import database.ShowDB;
-
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 public class Actor {
     private final String name;
     private final String careerDescription;
     private final Map<String, Double> filmography = new HashMap<>();
     private final Map<ActorsAwards, Integer> awards;
-    private double actor_rating = 0;
+    private double actorRating = 0;
 
     public Actor(final String name,
                  final String careerDescription,
@@ -28,10 +24,9 @@ public class Actor {
         }
     }
 
-    public void addActorRating(String title, double rating) {
+    public void addActorRating(final String title, final double rating) {
         int ratedMovies = 0;
 
-        double old_rating = filmography.get(title);
         filmography.replace(title, rating);
         double totalRating = 0;
         for (Double videoRating : filmography.values()) {
@@ -40,7 +35,7 @@ public class Actor {
                 ++ratedMovies;
             }
         }
-        actor_rating = totalRating / ratedMovies;
+        actorRating = totalRating / ratedMovies;
     }
 
     public String getName() {
@@ -52,10 +47,10 @@ public class Actor {
     }
 
     public Map<ActorsAwards, Integer> getAwards() {
-        return awards;
+        return Collections.unmodifiableMap(awards);
     }
 
     public double getActorRating() {
-        return actor_rating;
+        return actorRating;
     }
 }

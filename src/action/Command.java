@@ -1,6 +1,10 @@
 package action;
 
-import database.*;
+import database.ActorDB;
+import database.MovieDB;
+import database.ShowDB;
+import database.VideoDB;
+import database.UserDB;
 import fileio.ActionInputData;
 import fileio.Writer;
 import org.json.simple.JSONArray;
@@ -8,11 +12,14 @@ import org.json.simple.JSONArray;
 import java.io.IOException;
 
 public class Command {
-    public static void chooseCommand(ActorDB actorDB,
-                                     VideoDB videoDB, MovieDB movieDB,
-                                     ShowDB showDB,
-                                     UserDB userDB,
-                                     ActionInputData action, Writer fileWriter, JSONArray array) throws IOException {
+    public static void chooseCommand(final ActorDB actorDB,
+                                     final VideoDB videoDB,
+                                     final MovieDB movieDB,
+                                     final ShowDB showDB,
+                                     final UserDB userDB,
+                                     final ActionInputData action,
+                                     final Writer fileWriter,
+                                     final JSONArray array) throws IOException {
         String title = action.getTitle();
         String message = null;
         switch (action.getType()) {
@@ -32,7 +39,7 @@ public class Command {
                             action.getUsername(),
                             title, action.getGrade());
                 } else {
-                    message = userDB.addRatingShow(actorDB ,videoDB, showDB,
+                    message = userDB.addRatingShow(actorDB, videoDB, showDB,
                             action.getUsername(),
                             title,
                             action.getSeasonNumber(), action.getGrade());

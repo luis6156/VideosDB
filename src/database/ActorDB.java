@@ -6,22 +6,21 @@ import comparator.ActorAwardCmp;
 import comparator.ActorNameCmp;
 import comparator.ActorRatingCmp;
 import fileio.ActorInputData;
+import utils.Utils;
 
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class ActorDB {
-    HashMap<String, Actor> actorDB = new HashMap<>();
-    SortedSet<Actor> ratedActorsAsc = new TreeSet<>(new ActorRatingCmp(true));
-    SortedSet<Actor> ratedActorsDesc = new TreeSet<>(new ActorRatingCmp(false));
-    SortedSet<Actor> ascendingActors = new TreeSet<>(new ActorNameCmp(true));
-    SortedSet<Actor> descendingActors = new TreeSet<>(new ActorNameCmp(false));
-    SortedSet<Actor> awardedActorsAsc = new TreeSet<>(new ActorAwardCmp(true));
-    SortedSet<Actor> awardedActorsDesc =
-            new TreeSet<>(new ActorAwardCmp(false));
+    private final HashMap<String, Actor> actorDB = new HashMap<>();
+    private final TreeSet<Actor> ratedActors =
+            new TreeSet<>(new ActorRatingCmp());
+    private final TreeSet<Actor> ascendingActors =
+            new TreeSet<>(new ActorNameCmp());
+    private final TreeSet<Actor> awardedActors = new TreeSet<>(new ActorAwardCmp());
 
-    public void populateActorDB(List<ActorInputData> actorDB) {
+    public void populateActorDB(final List<ActorInputData> actorDB) {
         for (ActorInputData actor : actorDB) {
             Actor newActor = new Actor(
                     actor.getName(),
@@ -31,62 +30,38 @@ public class ActorDB {
             );
             this.actorDB.put(newActor.getName(), newActor);
             ascendingActors.add(newActor);
-            descendingActors.add(newActor);
-            awardedActorsAsc.add(newActor);
-            awardedActorsDesc.add(newActor);
+            awardedActors.add(newActor);
         }
     }
 
-    public void addRating(List<String> names, String title, double rating) {
+    public void addRating(final List<String> names, final String title,
+                          final double rating) {
         for (String name : names) {
             Actor tmp = actorDB.get(name);
             if (tmp != null) {
-                ratedActorsAsc.remove(tmp);
-                ratedActorsDesc.remove(tmp);
+                ratedActors.remove(tmp);
                 tmp.addActorRating(title, rating);
-                ratedActorsAsc.add(tmp);
-                ratedActorsDesc.add(tmp);
+                ratedActors.add(tmp);
             }
         }
     }
 
-    public boolean validAwards(Actor actor, List<String> awards) {
+    private boolean validAwards(final Actor actor, final List<String> awards) {
         for (String award : awards) {
-            if (!actor.getAwards().containsKey(ActorsAwards.valueOf(award))) {
+            if (!actor.getAwards().containsKey(Utils.stringToAwards(award))) {
                 return false;
             }
         }
         return true;
     }
 
-    public List<Actor> prepareAwardedActors(List<Actor> actors,
-                                            List<String> awards) {
-        List<Actor> solution = new ArrayList<>();
-
-        boolean found = false;
-        for (Actor actor : actors) {
-            for (String award : awards) {
-                if (!actor.getAwards().containsKey(ActorsAwards.valueOf(award))) {
-                    found = true;
-                    break;
-                }
-            }
-            if (!found) {
-                solution.add(actor);
-            }
-            found = false;
-        }
-
-        return solution;
-    }
-
-    public boolean validDescription(Actor actor,
-                                    List<String> description) {
+    private boolean validDescription(final Actor actor,
+                                     final List<String> description) {
         Matcher m;
         Pattern p;
         for (String s : description) {
-            p = Pattern.compile(".*\\b" + Pattern.quote(s) + "\\b.*");
-            m = p.matcher(actor.getCareerDescription().toLowerCase());
+            p = Pattern.compile("[ ,!.'(-]" + Pattern.quote(s) + "[ ,!.')-]", Pattern.CASE_INSENSITIVE);
+            m = p.matcher(actor.getCareerDescription());
             if (!m.find()) {
                 return false;
             }
@@ -94,77 +69,61 @@ public class ActorDB {
         return true;
     }
 
-    public String getTopK(String query,
-                          String sortOrder, List<String> description,
-                          List<String> awards, int k) {
+    public String getTopK(final String query,
+                          final String sortOrder, final List<String> description,
+                          final List<String> awards, final int k) {
+        Actor tmp;
+        Iterator<Actor> iterator;
         List<String> list = new ArrayList<>();
         switch (query) {
             case "average":
                 if (sortOrder.equals("desc")) {
-                    for (Actor actor : ratedActorsDesc) {
-                        if (actor.getActorRating() != 0) {
-                            list.add(actor.getName());
-                        }
-                        if (list.size() == k) {
-                            break;
-                        }
-                    }
+                    iterator = ratedActors.descendingIterator();
                 } else {
-                    for (Actor actor : ratedActorsAsc) {
-                        if (actor.getActorRating() != 0) {
-                            list.add(actor.getName());
-                        }
-                        if (list.size() == k) {
-                            break;
-                        }
+                    iterator = ratedActors.iterator();
+                }
+                while (iterator.hasNext()) {
+                    tmp = iterator.next();
+                    list.add(tmp.getName());
+                    if (list.size() == k) {
+                        return list.toString();
                     }
                 }
-                break;
+                return list.toString();
             case "filter_description":
                 if (sortOrder.equals("desc")) {
-                    for (Actor actor : descendingActors) {
-                        if (validDescription(actor, description)) {
-                            list.add(actor.getName());
-                        }
-                        if (list.size() == k) {
-                            break;
-                        }
-                    }
+                    iterator = ascendingActors.descendingIterator();
                 } else {
-                    for (Actor actor : ascendingActors) {
-                        if (validDescription(actor, description)) {
-                            list.add(actor.getName());
-                        }
-                        if (list.size() == k) {
-                            break;
-                        }
+                    iterator = ascendingActors.iterator();
+                }
+                while (iterator.hasNext()) {
+                    tmp = iterator.next();
+                    if (validDescription(tmp, description)) {
+                        list.add(tmp.getName());
+                    }
+                    if (list.size() == k) {
+                        return list.toString();
                     }
                 }
-                break;
+                return list.toString();
             case "awards":
                 if (sortOrder.equals("desc")) {
-                    for (Actor actor : awardedActorsDesc) {
-                        if (validAwards(actor, awards)) {
-                            list.add(actor.getName());
-                        }
-                        if (list.size() == k) {
-                            break;
-                        }
-                    }
+                    iterator = awardedActors.descendingIterator();
                 } else {
-                    for (Actor actor : awardedActorsAsc) {
-                        if (validAwards(actor, awards)) {
-                            list.add(actor.getName());
-                        }
-                        if (list.size() == k) {
-                            break;
-                        }
+                    iterator = awardedActors.iterator();
+                }
+                while (iterator.hasNext()) {
+                    tmp = iterator.next();
+                    if (validAwards(tmp, awards)) {
+                        list.add(tmp.getName());
+                    }
+                    if (list.size() == k) {
+                        return list.toString();
                     }
                 }
-                break;
+                return list.toString();
             default:
-                break;
+                return null;
         }
-        return list.toString();
     }
 }

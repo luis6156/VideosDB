@@ -14,7 +14,7 @@ public class RecomFavCmp implements Comparator<Video> {
 
     // Descending order
     @Override
-    public int compare(Video self, Video other) {
+    public int compare(final Video self, final Video other) {
         int result, selfIndex, otherIndex;
 
         result = Double.compare(self.getFavorites(),
@@ -24,7 +24,8 @@ public class RecomFavCmp implements Comparator<Video> {
         } else {
             selfIndex = videoByIndex.get(self.getTitle());
             otherIndex = videoByIndex.get(other.getTitle());
-            if (!videoByIndex.containsKey(self.getTitle()) || !videoByIndex.containsKey(other.getTitle())) {
+            if (!videoByIndex.containsKey(self.getTitle()) ||
+                    !videoByIndex.containsKey(other.getTitle())) {
                 return 1;
             } else {
                 result = Integer.compare(selfIndex, otherIndex);

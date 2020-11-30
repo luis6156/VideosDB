@@ -15,7 +15,7 @@ public class RecomRatingCmp implements Comparator<Video> {
 
     // Descending order
     @Override
-    public int compare(Video self, Video other) {
+    public int compare(final Video self, final Video other) {
         int result, selfIndex, otherIndex;
 
         result = Double.compare(self.getTotalRating(),

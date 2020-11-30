@@ -5,15 +5,9 @@ import actor.Actor;
 import java.util.Comparator;
 
 public class ActorAwardCmp implements Comparator<Actor> {
-    boolean isAscending;
-
-    public ActorAwardCmp(boolean isAscending) {
-        this.isAscending = isAscending;
-    }
-
-    // Ascending/Descending order
+    // Ascending order
     @Override
-    public int compare(Actor self, Actor other) {
+    public int compare(final Actor self, final Actor other) {
         int result, sumSelf = 0, sumOther = 0;
 
         for (Integer awards : self.getAwards().values()) {
@@ -26,16 +20,9 @@ public class ActorAwardCmp implements Comparator<Actor> {
         result = Integer.compare(sumSelf, sumOther);
 
         if (result != 0) {
-            if (isAscending) {
-                return result;
-            }
-            return -result;
+            return result;
         }
 
-        if (isAscending) {
-            return self.getName().compareTo(other.getName());
-        } else {
-            return -self.getName().compareTo(other.getName());
-        }
+        return self.getName().compareTo(other.getName());
     }
 }
